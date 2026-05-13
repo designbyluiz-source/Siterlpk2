@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Variáveis de tema — fontes únicas de verdade para as cores.
+   Hex values extraídos do Figma.
+   ============================================================ */
+:root {
+  --ambar-cream: #e7d1ac;
+  --ambar-terracotta: #d8a18a;
+  --ambar-navy: #002d4f;
+  --ambar-gray: #535456;
+  --ambar-rose: #c17b5d;
+  --ambar-brown: #ad816e;
+  --ambar-fab: #e7d1ac;
+  --ambar-fab-text: #3b3b3b;
+  --ambar-ink: #1a1410;
+  /* Home RPLK — fundo azul (mesmo valor que tailwind theme.colors.rplk.midnight) */
+  --rplk-midnight: #032a45;
+}
+
+/* ============================================================
+   Base styles — escritos em CSS puro para não depender de @apply
+   sobre cores customizadas (evita problemas de reload de config).
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--ambar-cream);
+  color: var(--ambar-navy);
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enquanto a home RPLK está ativa, o canvas do navegador acompanha o azul (evita “anel” creme no overscroll) */
+html.rplk-site-home,
+body.rplk-site-home {
+  background-color: var(--rplk-midnight);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--ambar-rose);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Componentes utilitários — só usam classes Tailwind built-in
+   no @apply, sem nenhuma cor customizada.
+   ============================================================ */
+@layer components {
+  .container-ambar {
+    @apply mx-auto w-full px-6 md:px-20;
+    max-width: 1446px;
+  }
+
+  .heading-section {
+    /* "AREAS COMUNS", "LOCALIZAÇÃO", "PLANTAS" — Manrope semibold */
+    @apply font-semibold uppercase;
+    font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+    font-size: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
+    letter-spacing: 0.1em;
+  }
+
+  .heading-display {
+    /* "Sobre o Âmbar" — Cinzel decorative caps */
+    @apply uppercase;
+    font-family: 'Cinzel', 'Cormorant Garamond', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 1.7rem + 1.5vw, 3.2rem);
+    line-height: 1.2;
+    letter-spacing: 0.17em;
+  }
+
+  .nav-link {
+    @apply px-5 py-2 uppercase transition-colors;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-outline-white {
+    @apply inline-flex items-center justify-center border border-white px-5 py-[10px]
+           font-bold text-[13px] text-white rounded-md transition-colors;
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+  }
+  .btn-outline-white:hover {
+    background-color: #ffffff;
+    color: var(--ambar-ink);
+  }
+
+  /* RPLK — botões outline e inputs do formulário */
+  .rplk-btn-outline {
+    @apply inline-flex items-center justify-center border bg-transparent transition-colors duration-300 ease-out;
+  }
+
+  /* Cores com opacidade em CSS puro (evita @apply com /opacity em cores custom) */
+  /* Cor explícita (evita herdar text-white da home + inputs nativos em dark OS) */
+  .rplk-input {
+    @apply w-full rounded-none py-3 text-[15px] focus:outline-none focus:ring-0;
+    border: 0;
+    /* Linha suave no branco — legível sem peso de preto */
+    border-bottom: 1px solid #a3a3a3;
+    background-color: transparent;
+    color: #252525;
+    caret-color: #252525;
+  }
+  .rplk-input::placeholder {
+    color: #b8b8b8;
+    opacity: 1;
+  }
+  .rplk-input::-webkit-input-placeholder {
+    color: #b8b8b8;
+    opacity: 1;
+  }
+  .rplk-input::-moz-placeholder {
+    color: #b8b8b8;
+    opacity: 1;
+  }
+  .rplk-input:focus {
+    border-bottom-color: #c8a46a;
+    border-bottom-width: 1px;
+  }
+
+  .rplk-select {
+    @apply cursor-pointer;
+  }
+
+  /*
+    <select> não tem placeholder. No WebKit o texto do controle fechado pode
+    herdar cor errada ou ficar “lavado”. Forçar preenchimento + hint :invalid.
+  */
+  select.rplk-input {
+    color: #252525;
+    -webkit-text-fill-color: #252525;
+  }
+  select.rplk-input:invalid {
+    color: #6a6a6a;
+    -webkit-text-fill-color: #6a6a6a;
+  }
+
+  /* Sombreamento sutil estilo Figma no display title */
+  .text-shadow-terracotta {
+    text-shadow: 1.5px 0 0 var(--ambar-terracotta);
+  }
+}
+
+/* Scrollbar fina nos painéis */
+.scrollbar-thin::-webkit-scrollbar { width: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Leaflet — Localização (tema Âmbar: tiles OSM + popups / atribuição) */
+.leaflet-container {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  background: var(--ambar-cream) !important;
+}
+
+/* Tom mais quente nos mosaicos (creme + terracotta da marca) */
+.ambar-leaflet-theme .leaflet-tile-pane {
+  filter: sepia(0.14) saturate(0.92) hue-rotate(-6deg) brightness(1.02);
+}
+
+.ambar-leaflet-theme .leaflet-control-attribution {
+  background: rgba(231, 209, 172, 0.92) !important;
+  color: var(--ambar-navy) !important;
+  border-top: 1px solid rgba(0, 45, 79, 0.2) !important;
+  font-size: 10px !important;
+  line-height: 1.35;
+  max-width: 100%;
+}
+.ambar-leaflet-theme .leaflet-control-attribution a {
+  color: var(--ambar-rose) !important;
+}
+
+.ambar-leaflet-theme .leaflet-popup-content-wrapper {
+  background: var(--ambar-cream) !important;
+  border: 2px solid var(--ambar-navy) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 28px rgba(0, 45, 79, 0.18) !important;
+}
+.ambar-leaflet-theme .leaflet-popup-tip {
+  background: var(--ambar-cream) !important;
+  border: 2px solid var(--ambar-navy) !important;
+  box-sizing: content-box;
+  margin: -2px auto 0;
+}
+
+.leaflet-div-icon.ambar-leaflet-pin-wrap,
+.leaflet-div-icon.ambar-leaflet-poi-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+.ambar-leaflet-pin {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(155deg, #e7c4b2, #d8a18a 42%, #c17b5d);
+  border: 2px solid #002d4f;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ambar-leaflet-pin-letter {
+  transform: rotate(45deg);
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #002d4f;
+  line-height: 1;
+  margin-top: -2px;
+}
+.ambar-leaflet-poi-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ambar-rose);
+  border: 2px solid var(--ambar-navy);
+  box-shadow: 0 2px 8px rgba(0, 45, 79, 0.22);
+}
+
+.ambar-leaflet-theme .leaflet-popup-content {
+  margin: 10px 12px;
+}
