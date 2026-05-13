@@ -149,6 +149,27 @@ export default function Plantas() {
   const saiuDoMapaRef = useRef(false)
   /** Unidade vinda de um evento externo (Decorados/Áreas Comuns) a aplicar após trocar pavimento. */
   const pendingUnidadeRef = useRef<string | null>(null)
+  /**
+   * Modalidade de entrada para distinguir tap/click (mobile/desktop) de navegação por teclado.
+   * Em mobile, o focus dispara DEPOIS do pointerdown e, sem este flag, o handler do focus
+   * resetava o lock do mapa e o pointerleave seguinte limpava o destaque.
+   */
+  const lastInputWasKeyboardRef = useRef(false)
+
+  useEffect(() => {
+    const setKey = () => {
+      lastInputWasKeyboardRef.current = true
+    }
+    const setPointer = () => {
+      lastInputWasKeyboardRef.current = false
+    }
+    window.addEventListener('keydown', setKey, true)
+    window.addEventListener('pointerdown', setPointer, true)
+    return () => {
+      window.removeEventListener('keydown', setKey, true)
+      window.removeEventListener('pointerdown', setPointer, true)
+    }
+  }, [])
 
   useEffect(() => {
     const c = getPavimentoConfig(pavAtivo)
@@ -308,6 +329,9 @@ export default function Plantas() {
   }, [])
 
   const handleUnitFocus = useCallback((u: UnidadePlanta) => {
+    // Focus dispara também após `pointerdown` em mobile/desktop. Esses casos já são
+    // tratados pelo `handleUnitPointerDown`; aqui só queremos reagir a tabulação por teclado.
+    if (!lastInputWasKeyboardRef.current) return
     mapaTravadoRef.current = false
     setSelected(u)
     setHighlightOnMap(u)
