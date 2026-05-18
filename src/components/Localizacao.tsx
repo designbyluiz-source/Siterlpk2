@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CategoriaLocalizacao, OsmPoi } from '../lib/overpassPois'
 import {
-  MAX_WALK_MINUTES_BARES,
   fetchNearbyPois,
   filterPoisWithinWalkingMinutes,
+  MAX_WALK_MINUTES_BARES,
 } from '../lib/overpassPois'
 import {
   fetchOsrmRoute,
@@ -11,6 +11,7 @@ import {
   formatOsrmDuration,
   geocodeAddress,
 } from '../lib/osmRouting'
+import { loadPoisFromSession, savePoisToSession } from '../lib/poiSessionCache'
 import { AMBAR_LEAFLET_POSITION } from '../data/ambar-geolocation'
 import LocalizacaoMapLeaflet from './LocalizacaoMapLeaflet'
 import AmbarRevealItem from './AmbarRevealItem'
@@ -139,10 +140,15 @@ type RouteSummary = {
   modeLabel: string
 }
 
+type PoisMeta = 'live' | 'cached' | 'example'
+
 export default function Localizacao() {
   const [filtro, setFiltro] = useState<CategoriaLocalizacao>('mercados')
   const [pois, setPois] = useState<OsmPoi[]>([])
   const [loadingPois, setLoadingPois] = useState(true)
+  /** Origem dos POIs quando o carregamento terminou — para aviso ao utilizador */
+  const [poisMeta, setPoisMeta] = useState<PoisMeta | null>(null)
+  const [poisReloadKey, setPoisReloadKey] = useState(0)
   const [routeDialogOpen, setRouteDialogOpen] = useState(false)
   const [typedOrigin, setTypedOrigin] = useState('')
   const [routePolyline, setRoutePolyline] = useState<[number, number][] | null>(null)
@@ -162,15 +168,40 @@ export default function Localizacao() {
     let alive = true
     setLoadingPois(true)
     setPois([])
+    setPoisMeta(null)
+
+    const applyLive = (data: OsmPoi[]) => {
+      savePoisToSession(filtro, data)
+      setPois(data)
+      setPoisMeta('live')
+    }
+
     fetchNearbyPois(filtro, MAP_LAT, MAP_LON, ac.signal)
       .then((data) => {
         if (!alive) return
-        if (data.length > 0) setPois(data)
-        else setPois(fallbackPoisForCategory(filtro))
+        if (data.length > 0) {
+          applyLive(data)
+          return
+        }
+        const cached = loadPoisFromSession(filtro)
+        if (cached && cached.length > 0) {
+          setPois(cached)
+          setPoisMeta('cached')
+          return
+        }
+        setPois(fallbackPoisForCategory(filtro))
+        setPoisMeta('example')
       })
       .catch(() => {
         if (!alive) return
+        const cached = loadPoisFromSession(filtro)
+        if (cached && cached.length > 0) {
+          setPois(cached)
+          setPoisMeta('cached')
+          return
+        }
         setPois(fallbackPoisForCategory(filtro))
+        setPoisMeta('example')
       })
       .finally(() => {
         if (alive) setLoadingPois(false)
@@ -179,7 +210,7 @@ export default function Localizacao() {
       alive = false
       ac.abort()
     }
-  }, [filtro])
+  }, [filtro, poisReloadKey])
 
   const clearOsrmRoute = useCallback(() => {
     setRoutePolyline(null)
@@ -447,6 +478,38 @@ export default function Localizacao() {
                 ))}
               </div>
             </div>
+
+            {!loadingPois && poisMeta === 'cached' && (
+              <div className="shrink-0 rounded-[10px] border border-ambar-navy/25 bg-ambar-navy/[0.07] px-3 py-2.5 text-center shadow-sm">
+                <p className="font-ui text-[11px] leading-snug text-ambar-gray">
+                  Não foi possível ligar ao serviço de mapas neste momento. Lista da última carga válida nesta
+                  sessão.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setPoisReloadKey((k) => k + 1)}
+                  className="mt-2 inline-flex rounded-md border border-ambar-navy/35 bg-white/80 px-3 py-1.5 font-ui text-[11px] font-semibold text-ambar-navy hover:bg-white"
+                >
+                  Tentar atualizar
+                </button>
+              </div>
+            )}
+
+            {!loadingPois && poisMeta === 'example' && (
+              <div className="shrink-0 rounded-[10px] border border-ambar-terracotta/40 bg-ambar-terracotta/[0.10] px-3 py-2.5 text-center shadow-sm">
+                <p className="font-ui text-[11px] leading-snug text-ambar-gray">
+                  Serviço de pontos próximos (OpenStreetMap) indisponível ou bloqueado. Os nomes listados são
+                  apenas ilustrativos — confirme no mapa ou no Google Maps.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setPoisReloadKey((k) => k + 1)}
+                  className="mt-2 inline-flex rounded-md border border-ambar-terracotta/50 bg-white/85 px-3 py-1.5 font-ui text-[11px] font-semibold text-ambar-terracotta hover:bg-white"
+                >
+                  Tentar de novo
+                </button>
+              </div>
+            )}
 
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[12px] border border-ambar-gray/20 bg-white/55 shadow-[0px_4px_11px_0px_rgba(0,0,0,0.05)]">
               <div className="flex shrink-0 items-center justify-between border-b border-ambar-gray/15 bg-ambar-cream/80 px-3 py-2">

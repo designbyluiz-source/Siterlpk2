@@ -8,5 +8,14 @@ export default defineConfig({
     strictPort: true,
     host: 'localhost',
     open: true,
+    proxy: {
+      // Mesmo domínio no browser → menos bloqueios (Safari / extensões) vs. chamada direta à Overpass
+      '/api/overpass': {
+        target: 'https://overpass-api.de',
+        changeOrigin: true,
+        rewrite: () => '/api/interpreter',
+        secure: true,
+      },
+    },
   },
 })

@@ -10,9 +10,35 @@ export type OsmPoi = {
   amenity?: string
 }
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
-
 const R_METERS = 950
+
+/**
+ * Mesmo domínio primeiro (/api/overpass) — proxied em dev (Vite) e em vários hosts (ex.: vercel.json).
+ * Depois mirrors públicos se o primeiro falhar ou for bloqueado.
+ */
+export function overpassInterpreterUrls(): string[] {
+  if (typeof window === 'undefined') {
+    return ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']
+  }
+  return [
+    '/api/overpass',
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+  ]
+}
+
+async function postOverpass(
+  interpreterUrl: string,
+  ql: string,
+  signal?: AbortSignal,
+): Promise<Response> {
+  return fetch(interpreterUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: `data=${encodeURIComponent(ql)}`,
+    signal,
+  })
+}
 
 /**
  * Fragmentos no nome (sem acento, minúsculas) excluídos só em «mercados».
@@ -149,13 +175,34 @@ ${foot}`
   }
 }
 
-type OverpassElement = {
+export type OverpassElement = {
   type: string
   id: number
   lat?: number
   lon?: number
   center?: { lat: number; lon: number }
   tags?: Record<string, string>
+}
+
+async function fetchOverpassJson(
+  ql: string,
+  signal?: AbortSignal,
+): Promise<{ elements?: OverpassElement[] }> {
+  const urls = overpassInterpreterUrls()
+  let lastErr: unknown
+  for (const url of urls) {
+    try {
+      const res = await postOverpass(url, ql, signal)
+      if (!res.ok) {
+        lastErr = new Error(`Overpass ${res.status} (${url})`)
+        continue
+      }
+      return (await res.json()) as { elements?: OverpassElement[] }
+    } catch (e) {
+      lastErr = e
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error('Overpass indisponível')
 }
 
 export async function fetchNearbyPois(
@@ -165,14 +212,7 @@ export async function fetchNearbyPois(
   signal?: AbortSignal,
 ): Promise<OsmPoi[]> {
   const q = overpassQuery(category, originLat, originLon)
-  const res = await fetch(OVERPASS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-    body: `data=${encodeURIComponent(q)}`,
-    signal,
-  })
-  if (!res.ok) throw new Error(`Overpass ${res.status}`)
-  const json = (await res.json()) as { elements?: OverpassElement[] }
+  const json = await fetchOverpassJson(q, signal)
   const mode: 'walk' | 'drive' = category === 'bares' ? 'walk' : 'drive'
   const rows: OsmPoi[] = []
   for (const el of json.elements ?? []) {
