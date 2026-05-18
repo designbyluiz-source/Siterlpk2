@@ -59,7 +59,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative isolate min-h-screen flex flex-col items-center justify-between py-10 md:py-[80px] px-6 md:px-[80px] overflow-hidden"
+      className="relative isolate min-h-svh flex flex-col items-center justify-between py-10 md:py-[80px] px-6 md:px-[80px] overflow-hidden"
       data-node-id="335:498"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-black">

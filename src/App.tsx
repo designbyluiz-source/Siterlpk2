@@ -8,7 +8,7 @@ import TatemonoPage from './pages/TatemonoPage'
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-w-0 overflow-x-hidden">
+      <div className="min-w-0 overflow-x-clip">
         <Routes>
           <Route path="/" element={<RplkHome />} />
           <Route path="/blog" element={<RplkBlogPage />} />

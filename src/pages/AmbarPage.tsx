@@ -34,7 +34,7 @@ export default function AmbarPage() {
   }, [])
 
   return (
-    <div className="min-h-screen min-w-0 overflow-x-hidden bg-ambar-cream text-ambar-ink">
+    <div className="min-h-screen min-w-0 overflow-x-clip bg-ambar-cream text-ambar-ink">
       <header
         className={`fixed top-0 left-0 right-0 z-[60] flex min-h-[56px] items-center justify-center px-4 py-3 md:px-8 transition-[background,box-shadow,border-color] duration-500 ${
           barSolid
@@ -56,7 +56,7 @@ export default function AmbarPage() {
           />
         </Link>
       </header>
-      <main className="min-w-0 overflow-x-hidden">
+      <main className="min-w-0 overflow-x-clip">
         <AmbarRevealSection variant="fade" threshold={0.06}>
           <Hero />
         </AmbarRevealSection>

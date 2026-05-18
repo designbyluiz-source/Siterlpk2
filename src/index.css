@@ -26,12 +26,14 @@
    ============================================================ */
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  /* clip — não vira scroll container nem força overflow-y: auto (diferente de hidden;
+     evita travar scroll vertical no mobile, ex.: iOS Safari + body como “scroller”). */
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
   background-color: var(--ambar-cream);
   color: var(--ambar-navy);
   font-family: 'Manrope', 'Inter', system-ui, sans-serif;
@@ -41,7 +43,7 @@ body {
 
 #root {
   min-width: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Enquanto a home RPLK está ativa, o canvas do navegador acompanha o azul (evita “anel” creme no overscroll) */

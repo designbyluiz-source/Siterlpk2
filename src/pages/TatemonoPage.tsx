@@ -87,7 +87,7 @@ function TatHero() {
 // ---------------------------------------------------------------------------
 function TatSobre() {
   return (
-    <section className="bg-rplk-editorial text-rplk-ink py-[90px] md:py-[110px] overflow-x-hidden">
+    <section className="bg-rplk-editorial text-rplk-ink py-[90px] md:py-[110px] overflow-x-clip">
       <div className="rplk-editorial-container px-6 md:px-12 min-w-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start min-w-0">
           {/* Left: text */}
@@ -148,7 +148,7 @@ function TatSobre() {
 function TatGaleria({ onOpenLightbox }: { onOpenLightbox: (lightboxIndex: number) => void }) {
   const g = tatemonoGaleriaSrcs
   return (
-    <section className="bg-rplk-midnight py-[90px] overflow-x-hidden">
+    <section className="bg-rplk-midnight py-[90px] overflow-x-clip">
       <div className="rplk-editorial-container px-6 md:px-12 min-w-0">
         {/* Header */}
         <div className="mb-10 flex flex-col gap-3">
@@ -257,7 +257,7 @@ function TatObra() {
   const { ref, visible } = useInView<HTMLDivElement>(0.15)
 
   return (
-    <section className="bg-rplk-editorial text-rplk-ink py-[90px] md:py-[110px] overflow-x-hidden">
+    <section className="bg-rplk-editorial text-rplk-ink py-[90px] md:py-[110px] overflow-x-clip">
       <div className="rplk-editorial-container px-6 md:px-12 min-w-0">
         {/* Header */}
         <div className="mb-12 flex flex-col gap-3">
@@ -323,7 +323,7 @@ function TatObra() {
 // ---------------------------------------------------------------------------
 function TatValores() {
   return (
-    <section className="bg-rplk-midnight py-[90px] md:py-[110px] overflow-x-hidden">
+    <section className="bg-rplk-midnight py-[90px] md:py-[110px] overflow-x-clip">
       <div className="rplk-editorial-container px-6 md:px-12 min-w-0">
         {/* Header */}
         <div className="mb-12 flex flex-col gap-3">
@@ -398,7 +398,7 @@ function TatValores() {
 // ---------------------------------------------------------------------------
 function TatLocalizacao() {
   return (
-    <section className="bg-rplk-editorial text-rplk-ink py-[90px] md:py-[110px] overflow-x-hidden">
+    <section className="bg-rplk-editorial text-rplk-ink py-[90px] md:py-[110px] overflow-x-clip">
       <div className="rplk-editorial-container px-6 md:px-12 min-w-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start min-w-0">
           {/* Left: address + proximities */}
@@ -472,7 +472,7 @@ function TatLocalizacao() {
 // ---------------------------------------------------------------------------
 function TatInterior({ onOpenLightbox }: { onOpenLightbox: (lightboxIndex: number) => void }) {
   return (
-    <section className="bg-rplk-midnight overflow-x-hidden">
+    <section className="bg-rplk-midnight overflow-x-clip">
       {/* Full-width image banner */}
       <button
         type="button"
@@ -549,7 +549,7 @@ export default function TatemonoPage() {
   }, [])
 
   return (
-    <div className="min-h-screen min-w-0 overflow-x-hidden bg-rplk-midnight text-white">
+    <div className="min-h-screen min-w-0 overflow-x-clip bg-rplk-midnight text-white">
       {/* Fixed header */}
       <header
         className={`fixed top-0 left-0 right-0 z-[60] flex min-h-[56px] items-center justify-center px-4 py-3 md:px-8 transition-[background,box-shadow,border-color] duration-500 ${
@@ -571,7 +571,7 @@ export default function TatemonoPage() {
         </Link>
       </header>
 
-      <main className="min-w-0 overflow-x-hidden">
+      <main className="min-w-0 overflow-x-clip">
         <AmbarRevealSection variant="fade" threshold={0.06}>
           <TatHero />
         </AmbarRevealSection>

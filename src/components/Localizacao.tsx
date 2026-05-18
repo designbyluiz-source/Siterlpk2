@@ -462,7 +462,7 @@ export default function Localizacao() {
                 )}
               </div>
 
-              <ul className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+              <ul className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overflow-x-clip">
                 {listaLateral.map((poi, idx) => {
                   const active = hoveredPoi === poi.id
                   return (

@@ -45,9 +45,9 @@ export default function RplkShell({ children, title }: RplkShellProps) {
   }, [title])
 
   return (
-    <div className="min-h-screen min-w-0 overflow-x-hidden bg-rplk-midnight text-white font-rplk-sans text-[16px] font-normal antialiased selection:bg-rplk-gold/40 selection:text-rplk-midnight">
+    <div className="min-h-screen min-w-0 overflow-x-clip bg-rplk-midnight text-white font-rplk-sans text-[16px] font-normal antialiased selection:bg-rplk-gold/40 selection:text-rplk-midnight">
       <RplkHeader />
-      <main className="min-w-0 overflow-x-hidden">{children}</main>
+      <main className="min-w-0 overflow-x-clip">{children}</main>
       <RplkFooter />
       <WhatsAppFab preset="rplk" />
     </div>
