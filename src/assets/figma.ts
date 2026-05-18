@@ -31,8 +31,9 @@ export const ASSETS = {
   // Localização
   mapImage: '/figma-assets/df14977a97fa073d33089164d2b9b2ff92da9364.png',
 
-  // Separador conceitual — textura de pedra (panorâmica 2400×550)
+  // Separador — textura de pedra (panorâmica wide em PNG)
   separadorTexture: '/figma-assets/separador-pedra.jpg',
+  separadorTextureWide: '/figma-assets/separador-pedra-wide.png',
   ambarWordmarkSeparator: '/figma-assets/8bcbf3296ee97c4a4d0bd1d5e32ea2ad97e124e7.svg',
 
   // Plantas

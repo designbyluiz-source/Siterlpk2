@@ -9,15 +9,36 @@ export default function Separador() {
       aria-label="Pilares conceituais"
     >
       <div aria-hidden className="absolute inset-0 overflow-hidden">
-        <img
-          src={ASSETS.separadorTexture}
-          alt=""
-          className="h-full w-full object-cover object-center motion-safe:animate-ambar-separador-bg will-change-transform"
-        />
+        {/*
+          Centragem (translate -50%) num wrapper exterior; animação só no interior.
+          Se translate e keyframes ficam no mesmo elemento, o transform da animação
+          sobrescreve o translate e o pan/zoom deixa de funcionar como esperado.
+        */}
+        <div
+          className={[
+            'absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2',
+            'h-[118%] w-[118%]',
+            'lg:h-[132%] lg:w-[132%]',
+          ].join(' ')}
+        >
+          {/* overflow clip; animação na <img> com origin-center — motion-safe impedia animação com “reduzir movimento” mal configurado no SO */}
+          <div className="h-full w-full overflow-hidden">
+            <img
+              src={ASSETS.separadorTextureWide}
+              alt=""
+              className={[
+                'block h-full w-full object-cover object-center',
+                'origin-center will-change-transform',
+                'max-lg:animate-ambar-separador-bg lg:animate-ambar-separador-bg-lg',
+                'motion-reduce:animate-none',
+              ].join(' ')}
+            />
+          </div>
+        </div>
       </div>
       {/* Véu com leve deriva (contrária à textura) para dar sensação de profundidade */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -inset-[14%] bg-black/20 motion-safe:animate-ambar-separador-veil will-change-transform" />
+        <div className="absolute -inset-[14%] bg-black/20 animate-ambar-separador-veil motion-reduce:animate-none will-change-transform" />
       </div>
 
       <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-[60px]">

@@ -80,10 +80,15 @@ export default {
           '0%': { transform: 'scale(1) translate3d(0,0,0)' },
           '100%': { transform: 'scale(1.12) translate3d(-2%, -1.5%, 0)' },
         },
-        /** Pilares (Separador): mais amplitude que o Ken Burns RPLK, pausado. */
+        /** Pilares (Separador): amplitude moderada em mobile. */
         'ambar-separador-bg': {
-          '0%': { transform: 'scale(1.02) translate3d(-3.5%, -2.5%, 0)' },
-          '100%': { transform: 'scale(1.16) translate3d(3%, 2.5%, 0)' },
+          '0%': { transform: 'scale(1.05) translate3d(-3%, -2.5%, 0)' },
+          '100%': { transform: 'scale(1.18) translate3d(3%, 2.5%, 0)' },
+        },
+        /** Desktop — pan/zoom perceptível */
+        'ambar-separador-bg-lg': {
+          '0%': { transform: 'scale(1.06) translate3d(-2.2%, -1.8%, 0)' },
+          '100%': { transform: 'scale(1.14) translate3d(2.2%, 1.8%, 0)' },
         },
         'ambar-separador-veil': {
           '0%': { transform: 'translate3d(2.5%, 2%, 0)' },
@@ -94,8 +99,9 @@ export default {
         marquee: 'marquee 35s linear infinite',
         'fade-in': 'fadeIn 0.8s ease-out forwards',
         'rplk-kenburn': 'rplk-kenburn 28s ease-in-out infinite alternate',
-        'ambar-separador-bg': 'ambar-separador-bg 24s ease-in-out infinite alternate',
-        'ambar-separador-veil': 'ambar-separador-veil 32s ease-in-out infinite alternate',
+        'ambar-separador-bg': 'ambar-separador-bg 18s ease-in-out infinite alternate',
+        'ambar-separador-bg-lg': 'ambar-separador-bg-lg 22s ease-in-out infinite alternate',
+        'ambar-separador-veil': 'ambar-separador-veil 26s ease-in-out infinite alternate',
       },
     },
   },
