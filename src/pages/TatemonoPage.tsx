@@ -39,20 +39,12 @@ function TatHero() {
           Em Obra · Entrega Set. 2026
         </span>
 
-        <div className="flex flex-col gap-1 min-w-0">
-          <h1
-            className="font-rplk-sans uppercase text-white leading-[0.95] break-words max-w-full"
-            style={{ fontSize: 'clamp(2.75rem, 12vw, 10rem)' }}
-          >
-            ST01
-          </h1>
-          <h2
-            className="font-rplk-sans uppercase text-white leading-tight break-words max-w-full"
-            style={{ fontSize: 'clamp(1.5rem, 5.5vw, 4rem)' }}
-          >
-            AOI TATEMONO
-          </h2>
-        </div>
+        <h1
+          className="font-rplk-sans uppercase text-white leading-[0.95] break-words max-w-full min-w-0"
+          style={{ fontSize: 'clamp(2.75rem, 12vw, 10rem)' }}
+        >
+          AOI TATEMONO
+        </h1>
 
         <p className="font-rplk-sans uppercase tracking-rplk-nav text-white/80 text-sm md:text-base mt-1">
           Água Verde · Curitiba · PR
@@ -538,7 +530,7 @@ export default function TatemonoPage() {
   }, [])
 
   useEffect(() => {
-    document.title = 'ST01 AOI Tatemono — RPLK'
+    document.title = 'AOI Tatemono — RPLK'
   }, [])
 
   useEffect(() => {

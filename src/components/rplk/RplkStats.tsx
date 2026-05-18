@@ -1,3 +1,18 @@
+const STATS = [
+  {
+    value: '12.000+',
+    label: 'm² em obras',
+  },
+  {
+    value: '7',
+    label: 'anos desenvolvendo projetos em Curitiba',
+  },
+  {
+    value: '100%',
+    label: 'foco em studios para investimento',
+  },
+] as const
+
 export default function RplkStats() {
   return (
     <section
@@ -13,39 +28,25 @@ export default function RplkStats() {
         </h2>
 
         <div className="grid md:grid-cols-3 divide-y divide-rplk-ink/15 md:divide-y-0 border-t border-rplk-ink/15">
-          <div className="flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10 md:border-r border-rplk-ink/15">
-            <p
-              className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal"
-              style={{ fontSize: 'clamp(5rem,18vw,8.125rem)' }}
+          {STATS.map(({ value, label }, i) => (
+            <div
+              key={label}
+              className={[
+                'flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10',
+                i < 2 ? 'md:border-r border-rplk-ink/15' : '',
+              ].join(' ')}
             >
-              6
-            </p>
-            <p className="mx-auto max-w-[14rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
-              Projetos vendidos antes da entrega
-            </p>
-          </div>
-          <div className="flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10 md:border-r border-rplk-ink/15">
-            <p
-              className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal"
-              style={{ fontSize: 'clamp(5rem,18vw,8.125rem)' }}
-            >
-              +28%
-            </p>
-            <p className="mx-auto max-w-[14rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
-              Média de valorização em carteira selecionada
-            </p>
-          </div>
-          <div className="flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10">
-            <p
-              className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal"
-              style={{ fontSize: 'clamp(5rem,18vw,8.125rem)' }}
-            >
-              100%
-            </p>
-            <p className="mx-auto max-w-[14rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
-              Foco residencial
-            </p>
-          </div>
+              <p
+                className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal break-words"
+                style={{ fontSize: 'clamp(2.75rem, 10vw, 7rem)' }}
+              >
+                {value}
+              </p>
+              <p className="mx-auto max-w-[16rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
+                {label}
+              </p>
+            </div>
+          ))}
         </div>
 
         <div className="border-b border-rplk-ink/15 mt-0" />

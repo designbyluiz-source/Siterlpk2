@@ -40,13 +40,13 @@ export default function RplkManifesto() {
 
             <p className="font-rplk-sans text-[16px] leading-[1.7] text-rplk-ink/75 max-w-xl">
               Renan Perozin e Lucas Kasecker, ambos engenheiros civis e filhos de construtores,
-              se uniram em 2018 carregando, além da herança familiar, décadas de experiência e a
+              se uniram em 2019 carregando, além da herança familiar, décadas de experiência e a
               vontade de inovar e entregar excelência. Mais do que construir, a RPLK proporciona
               a seus clientes projetos com alta qualidade, segurança, valor e rentabilidade.
             </p>
 
             <p className="font-rplk-sans text-[14px] uppercase tracking-rplk-nav text-rplk-gold">
-              Fundada em 2018 · Curitiba, PR
+              Fundado em 2019 · Curitiba, PR
             </p>
           </div>
 

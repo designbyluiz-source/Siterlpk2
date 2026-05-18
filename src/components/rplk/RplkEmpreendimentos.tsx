@@ -69,7 +69,7 @@ export default function RplkEmpreendimentos({ standalone = false }: { standalone
                     <img
                       src={ASSETS.ambarWordmark}
                       alt=""
-                      className="w-[min(88vw,420px)] max-h-[min(40vh,200px)] object-contain drop-shadow-[0_4px_32px_rgba(0,0,0,0.45)]"
+                      className="block w-[min(68vw,360px)] max-w-full h-auto shrink-0 object-contain drop-shadow-[0_4px_32px_rgba(0,0,0,0.45)]"
                     />
                   ) : (
                     <p className="max-w-[min(92vw,1100px)] px-6 text-center font-rplk-serif font-normal italic text-[clamp(2rem,7vw,4rem)] leading-[1.05] tracking-normal text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.5)]">
@@ -190,7 +190,7 @@ export default function RplkEmpreendimentos({ standalone = false }: { standalone
                 {e.slug ? (
                   <Link
                     to={e.slug}
-                    className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-rplk-gold/50 focus-visible:ring-offset-2"
+                    className="absolute right-0 bottom-0 h-full w-full z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-rplk-gold/50 focus-visible:ring-offset-2"
                     aria-label={`Ver página do empreendimento ${e.title}`}
                     tabIndex={0}
                   />
@@ -212,7 +212,7 @@ export default function RplkEmpreendimentos({ standalone = false }: { standalone
                     <img
                       src={ASSETS.ambarWordmark}
                       alt=""
-                      className="w-[min(88%,320px)] max-h-[150px] object-contain drop-shadow-[0_4px_32px_rgba(0,0,0,0.55)]"
+                      className="block w-[min(72%,332px)] max-w-full h-auto shrink-0 object-contain drop-shadow-[0_4px_32px_rgba(0,0,0,0.55)]"
                     />
                   ) : (
                     <p className="px-6 text-center font-rplk-serif font-normal italic text-[clamp(2rem,4vw,3rem)] leading-[1.05] tracking-normal text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.6)]">

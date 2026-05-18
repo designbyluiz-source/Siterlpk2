@@ -9,7 +9,7 @@ export const INV = {
 export const heroAmbianceSlides: readonly { image: string; badge: string; title: string; sub: string; href?: string }[] = [
   { image: '/rplk/hero-institucional.png', badge: 'Construtora e Incorporadora', title: 'RPLK', sub: 'Curitiba · PR' },
   { image: ASSETS.sobreBuilding, badge: 'Lançamento',                title: 'Âmbar',         sub: 'Água Verde · Curitiba', href: '/empreendimentos/ambar'     },
-  { image: INV.tatemono,         badge: 'Em Construção',             title: 'ST01 Tatemono', sub: 'Curitiba · PR',         href: '/empreendimentos/tatemono'  },
+  { image: INV.tatemono,         badge: 'Em Construção',             title: 'Tatemono',      sub: 'Curitiba · PR',         href: '/empreendimentos/tatemono'  },
 ]
 
 export type Empreendimento = {
@@ -42,11 +42,11 @@ export const empreendimentos: Empreendimento[] = [
     image: ASSETS.heroBg,
   },
   {
-    anchorId: 'emp-st01-tatemono',
+    anchorId: 'emp-tatemono',
     slug: '/empreendimentos/tatemono',
     status: 'Em construção',
     badge: 'Alta procura',
-    title: 'ST01 — AOI TATEMONO',
+    title: 'AOI TATEMONO',
     headline: 'Studios inteligentes para quem investe com visão.',
     metragem: '24 m² a 34 m²',
     tipologia: 'Studios e 1 dorm.',
@@ -81,29 +81,5 @@ export const blogPosts = [
     title: 'Estratégias patrimoniais',
     excerpt: 'Diversificação, blindagem e visão de longo prazo no portfólio.',
     image: ASSETS.decoradosBg,
-  },
-]
-
-export const depoimentos = [
-  {
-    quote:
-      'Adquiri meu primeiro studio ainda no lançamento e tive valorização antes mesmo da entrega.',
-    name: 'Mariana V.',
-    perfil: 'Investidora — Curitiba',
-    rating: 5,
-  },
-  {
-    quote:
-      'A leitura de bairro e o cuidado com prazo me deram segurança para compor patrimônio em duas torres.',
-    name: 'Ricardo F.',
-    perfil: 'Empresário — investimento residencial',
-    rating: 5,
-  },
-  {
-    quote:
-      'Transparência comercial e produto alinhado ao que prometem. Hoje é meu melhor ativo locável.',
-    name: 'Helena K.',
-    perfil: 'Médica — renda passiva',
-    rating: 5,
   },
 ]

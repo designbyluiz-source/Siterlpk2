@@ -5,7 +5,6 @@ import RplkManifesto from '../components/rplk/RplkManifesto'
 import RplkStats from '../components/rplk/RplkStats'
 import RplkEmpreendimentos from '../components/rplk/RplkEmpreendimentos'
 import RplkPilares from '../components/rplk/RplkPilares'
-import RplkDepoimentos from '../components/rplk/RplkDepoimentos'
 import RplkCtaFinal from '../components/rplk/RplkCtaFinal'
 
 export default function RplkHome() {
@@ -20,7 +19,6 @@ export default function RplkHome() {
       <RplkManifesto />
       <RplkStats />
       <RplkPilares />
-      <RplkDepoimentos />
       <RplkCtaFinal />
     </RplkShell>
   )
