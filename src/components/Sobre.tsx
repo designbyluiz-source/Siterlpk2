@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ASSETS } from '../assets/figma'
 import ImageLightbox from './ImageLightbox'
+import AmbarRevealItem from './AmbarRevealItem'
 
 const GALLERY = [
   ASSETS.sobreBuilding,
@@ -38,22 +39,34 @@ export default function Sobre() {
       <div className="container-ambar grid lg:grid-cols-[895fr_551fr] gap-6 lg:gap-0 py-10 md:py-[40px]">
         {/* LEFT: nav + título + texto */}
         <div className="flex flex-col gap-6 pr-0 lg:pr-12">
-          <nav className="flex flex-wrap gap-3 -ml-5">
+          <nav
+            className="flex w-full flex-wrap items-center justify-center gap-3 text-center [&_a]:flex-none"
+            aria-label="Secções do Âmbar"
+          >
             {NAV_LINKS.map((link, idx) => (
-              <a
+              <AmbarRevealItem
                 key={link.id}
-                href={`#${link.id}`}
-                className={[
-                  'nav-link text-ambar-navy hover:opacity-70',
-                  idx === 0 ? 'font-semibold' : 'font-medium',
-                ].join(' ')}
+                preset="zoom-pop"
+                staggerIndex={idx}
+                staggerMs={75}
+                once={false}
+                threshold={0.05}
+                className="flex-none"
               >
-                {link.label}
-              </a>
+                <a
+                  href={`#${link.id}`}
+                  className={[
+                    'nav-link text-ambar-navy hover:opacity-70',
+                    idx === 0 ? 'font-semibold' : 'font-medium',
+                  ].join(' ')}
+                >
+                  {link.label}
+                </a>
+              </AmbarRevealItem>
             ))}
           </nav>
 
-          <div className="flex flex-col gap-6 md:gap-11 pl-0 md:pl-[80px] py-8 md:py-[54px]">
+          <AmbarRevealItem preset="glide-right" delayMs={120} once={false} className="flex flex-col gap-6 md:gap-11 pl-0 md:pl-[80px] py-8 md:py-[54px]">
             <h2 className="heading-display text-shadow-terracotta text-ambar-navy max-w-[460px]">
               Sobre o Âmbar
             </h2>
@@ -64,13 +77,13 @@ export default function Sobre() {
               sofisticada onde arquitetura, funcionalidade e identidade caminham
               juntas em todos os ambientes.
             </p>
-          </div>
+          </AmbarRevealItem>
         </div>
 
         {/* RIGHT: imagem principal + galeria */}
         <div className="flex flex-col gap-[10px] py-[15px] px-[10px] overflow-hidden lg:h-full lg:min-h-0 lg:justify-center">
           {/* Main image */}
-          <div className="relative w-full aspect-[531/429] overflow-hidden bg-black/10">
+          <AmbarRevealItem preset="blur-rise" once={false} className="relative w-full aspect-[531/429] overflow-hidden bg-black/10">
             <img
               src={GALLERY[active]}
               alt="Vista do empreendimento Âmbar"
@@ -89,10 +102,15 @@ export default function Sobre() {
                 aria-hidden
               />
             </button>
-          </div>
+          </AmbarRevealItem>
 
           {/* Thumbnails row: dim + chevron-over-dim + main + chevron-over-dim + dim */}
-          <div className="flex items-center justify-center gap-7 overflow-hidden w-full">
+          <AmbarRevealItem
+            preset="fade-up"
+            delayMs={140}
+            once={false}
+            className="flex items-center justify-center gap-7 overflow-hidden w-full"
+          >
             {/* Dim thumb 1 */}
             <div className="hidden md:block relative h-[148px] w-[207px] opacity-60 shrink-0">
               <img src={visibleThumbs[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -153,7 +171,7 @@ export default function Sobre() {
             <div className="hidden md:block relative h-[148px] w-[207px] opacity-60 shrink-0">
               <img src={visibleThumbs[2]} alt="" className="absolute inset-0 h-full w-full object-cover" />
             </div>
-          </div>
+          </AmbarRevealItem>
         </div>
       </div>
 

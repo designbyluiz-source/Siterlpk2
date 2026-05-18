@@ -1,45 +1,48 @@
 import { useEffect } from 'react'
-import RplkHeader from '../components/rplk/RplkHeader'
+import AmbarRevealSection from '../components/AmbarRevealSection'
+import RplkShell from '../layouts/RplkShell'
 import RplkHero from '../components/rplk/RplkHero'
 import RplkManifesto from '../components/rplk/RplkManifesto'
 import RplkStats from '../components/rplk/RplkStats'
 import RplkEmpreendimentos from '../components/rplk/RplkEmpreendimentos'
 import RplkPilares from '../components/rplk/RplkPilares'
-import RplkBlog from '../components/rplk/RplkBlog'
 import RplkDepoimentos from '../components/rplk/RplkDepoimentos'
 import RplkCtaFinal from '../components/rplk/RplkCtaFinal'
-import RplkLeadForm from '../components/rplk/RplkLeadForm'
-import RplkFooter from '../components/rplk/RplkFooter'
-import WhatsAppFab from '../components/WhatsAppFab'
 
 export default function RplkHome() {
   useEffect(() => {
     document.title = 'RPLK — Construtora e Incorporadora'
-    const { documentElement, body } = document
-    documentElement.classList.add('rplk-site-home')
-    body.classList.add('rplk-site-home')
-    return () => {
-      documentElement.classList.remove('rplk-site-home')
-      body.classList.remove('rplk-site-home')
-    }
   }, [])
 
   return (
-    <div className="min-h-screen bg-rplk-midnight text-white font-rplk-sans antialiased selection:bg-rplk-gold/40 selection:text-rplk-midnight">
-      <RplkHeader />
-      <main>
+    <RplkShell>
+      <AmbarRevealSection variant="fade" threshold={0.06} once={false}>
         <RplkHero />
-        <RplkManifesto />
-        <RplkStats />
+      </AmbarRevealSection>
+
+      <AmbarRevealSection variant="fade-up" delayMs={70} once={false}>
         <RplkEmpreendimentos />
+      </AmbarRevealSection>
+
+      <AmbarRevealSection variant="fade-right" delayMs={80} once={false}>
+        <RplkManifesto />
+      </AmbarRevealSection>
+
+      <AmbarRevealSection variant="fade-up" delayMs={70} once={false}>
+        <RplkStats />
+      </AmbarRevealSection>
+
+      <AmbarRevealSection variant="fade-left" delayMs={80} once={false}>
         <RplkPilares />
-        <RplkBlog />
+      </AmbarRevealSection>
+
+      <AmbarRevealSection variant="fade-up" delayMs={70} once={false}>
         <RplkDepoimentos />
+      </AmbarRevealSection>
+
+      <AmbarRevealSection variant="fade" delayMs={60} once={false}>
         <RplkCtaFinal />
-        <RplkLeadForm />
-      </main>
-      <RplkFooter />
-      <WhatsAppFab preset="rplk" />
-    </div>
+      </AmbarRevealSection>
+    </RplkShell>
   )
 }

@@ -1,48 +1,83 @@
+import { Link } from 'react-router-dom'
 import { blogPosts } from '../../data/rplk-content'
 
-export default function RplkBlog() {
+export default function RplkBlog({ standalone = false }: { standalone?: boolean }) {
+  const sectionPad = standalone
+    ? 'scroll-mt-[88px] pt-[calc(71px+1.75rem)] pb-24 md:pt-[calc(71px+2.25rem)] md:pb-32'
+    : 'scroll-mt-[88px] py-[90px] md:py-[110px]'
+
+  const introClass = standalone
+    ? 'mt-8 max-w-[42rem] font-rplk-serif font-normal italic text-[clamp(1rem,2vw,1.5625rem)] leading-[1.55] text-rplk-muted'
+    : 'mt-6 max-w-2xl font-rplk-serif font-normal italic text-[clamp(0.9375rem,1.8vw,1.35rem)] leading-relaxed text-rplk-muted'
+
   return (
-    <section id="blog" className="bg-rplk-soft py-16 md:py-20 scroll-mt-[120px]" aria-labelledby="rplk-blog-heading">
-      <div className="mx-auto max-w-[1600px] px-5 md:px-10 lg:px-14">
-        <p className="text-[11px] uppercase tracking-[0.45em] text-rplk-gold font-rplk-sans">Conteúdo</p>
-        <h2 id="rplk-blog-heading" className="mt-2 font-rplk-serif text-[clamp(1.75rem,3.5vw,2.75rem)] text-rplk-white tracking-tight">
+    <section id="blog" className={`bg-rplk-soft ${sectionPad}`} aria-labelledby="rplk-blog-heading">
+      <div className="rplk-editorial-container">
+        <p className="font-rplk-sans text-[clamp(1rem,2vw,1.125rem)] font-normal uppercase tracking-rplk-nav text-rplk-gold">
+          Conteúdo
+        </p>
+        <h2
+          id="rplk-blog-heading"
+          className={`font-rplk-serif font-normal italic text-rplk-white tracking-normal ${standalone ? 'mt-5 text-[clamp(2.25rem,5vw,4.375rem)] leading-[1.03]' : 'mt-4 text-[clamp(2rem,4.5vw,3rem)] leading-[1.05]'}`}
+        >
           Blog RPLK
         </h2>
-        <p className="mt-3 max-w-2xl text-rplk-muted font-rplk-sans text-sm leading-relaxed">
-          Somente conteúdos orientados ao investidor — sem narrativa industrial.
+        <p className={introClass}>
+          Somente textos orientados ao investidor — sem narrativa industrial. Para projetos em curso e fichas,
+          use{' '}
+          <Link
+            to="/empreendimentos"
+            className="text-white/92 underline decoration-rplk-gold/45 underline-offset-[5px] transition-colors hover:text-rplk-gold hover:decoration-rplk-gold"
+          >
+            Empreendimentos
+          </Link>
+          ; para o manifesto da empresa,{' '}
+          <Link
+            to="/#sobre"
+            className="text-white/92 underline decoration-rplk-gold/45 underline-offset-[5px] transition-colors hover:text-rplk-gold hover:decoration-rplk-gold"
+          >
+            Sobre
+          </Link>{' '}
+          na home.
         </p>
       </div>
 
       <div
-        className="mt-8 flex w-full gap-4 overflow-x-auto overflow-y-hidden scroll-smooth px-5 pb-3 pt-1 [scrollbar-width:thin] snap-x snap-mandatory md:gap-5 md:px-10 lg:pl-14 lg:pr-8"
+        className={`mt-14 md:mt-[90px] flex w-full gap-6 overflow-x-auto overflow-y-hidden scroll-smooth px-[40px] pb-6 pt-1 [scrollbar-width:thin] snap-x snap-mandatory md:gap-8 lg:pl-[120px] lg:pr-[120px] ${standalone ? 'md:pb-8' : ''}`}
         style={{ scrollbarColor: 'rgba(255,255,255,0.25) transparent' }}
         tabIndex={0}
         role="region"
         aria-label="Artigos do blog em carrossel horizontal"
       >
         {blogPosts.map((post) => (
-          <a
+          <article
             key={post.title}
-            href="#blog"
-            className="group flex w-[min(78vw,340px)] shrink-0 snap-start flex-col items-stretch overflow-hidden border border-white/[0.12] bg-rplk-midnight/55 transition-colors hover:border-rplk-gold/45 sm:w-[300px] md:w-[320px]"
+            className={`group flex shrink-0 snap-start flex-col items-stretch overflow-hidden bg-rplk-midnight/60 sm:w-[300px] md:w-[320px] ${standalone ? 'w-[min(82vw,360px)]' : 'w-[min(78vw,340px)]'}`}
           >
-            <div className="relative aspect-[16/10] w-full max-h-[160px] shrink-0 overflow-hidden sm:max-h-[150px]">
+            <div className="relative aspect-[16/10] w-full max-h-[160px] shrink-0 overflow-hidden sm:max-h-[150px] md:max-h-[170px]">
               <img
                 src={post.image}
                 alt=""
-                className="absolute inset-0 block h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                className="absolute inset-0 block h-full w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.08]"
               />
             </div>
-            <div className="flex flex-col gap-2 p-4">
-              <h3 className="font-rplk-serif text-lg leading-snug text-rplk-white transition-colors group-hover:text-rplk-gold md:text-[1.05rem]">
+            <div className="flex flex-col gap-3 p-[30px]">
+              <p className="font-rplk-serif font-normal italic text-[clamp(1rem,2vw,1.35rem)] leading-snug text-rplk-gold/90">
+                Editorial
+              </p>
+              <h3 className="font-rplk-sans text-[clamp(1rem,2vw,1.35rem)] font-normal uppercase tracking-rplk-nav leading-[1.2] text-rplk-white transition-colors group-hover:text-rplk-gold">
                 {post.title}
               </h3>
-              <p className="line-clamp-2 text-xs leading-relaxed text-rplk-muted font-rplk-sans">{post.excerpt}</p>
-              <span className="pt-1 text-[9px] uppercase tracking-[0.28em] text-rplk-gold/55 font-rplk-sans">
+              <p
+                className={`font-rplk-serif font-normal italic leading-relaxed text-rplk-muted ${standalone ? 'line-clamp-3 text-[clamp(0.8125rem,1.5vw,1rem)]' : 'line-clamp-2 text-[clamp(0.75rem,1.4vw,0.9375rem)]'}`}
+              >
+                {post.excerpt}
+              </p>
+              <span className="pt-2 font-rplk-sans text-[14px] uppercase tracking-rplk-nav text-rplk-gold/55">
                 Leitura editorial
               </span>
             </div>
-          </a>
+          </article>
         ))}
       </div>
     </section>

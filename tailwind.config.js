@@ -45,7 +45,9 @@ export default {
         },
       },
       fontFamily: {
-        'rplk-sans': ['"DM Sans"', '"Inter"', 'system-ui', 'sans-serif'],
+        /* RPLK — papel “Brother 1816”: estrutura / navegação (Google: Barlow Condensed). */
+        'rplk-sans': ['"Barlow Condensed"', '"Arial Narrow"', 'Arial', 'sans-serif'],
+        /* RPLK — papel “Minion 3 Subhead”: editorial serif (Cormorant Garamond, predominantemente itálico). */
         'rplk-serif': ['"Cormorant Garamond"', 'Georgia', 'serif'],
         // Cinzel ≈ Bertoni Capitals (decorative Roman caps)
         display: ['"Cinzel"', '"Cormorant Garamond"', 'Georgia', 'serif'],
@@ -58,6 +60,12 @@ export default {
       },
       letterSpacing: {
         'widest-2': '0.25em',
+        /** ~3px em root 16px — navegação / labels RPLK */
+        'rplk-nav': '0.1875rem',
+      },
+      maxWidth: {
+        /** Container editorial principal (referência Plaenge ~1444px). */
+        'rplk-editorial': '1444px',
       },
       keyframes: {
         marquee: {
@@ -72,11 +80,22 @@ export default {
           '0%': { transform: 'scale(1) translate3d(0,0,0)' },
           '100%': { transform: 'scale(1.12) translate3d(-2%, -1.5%, 0)' },
         },
+        /** Pilares (Separador): mais amplitude que o Ken Burns RPLK, pausado. */
+        'ambar-separador-bg': {
+          '0%': { transform: 'scale(1.02) translate3d(-3.5%, -2.5%, 0)' },
+          '100%': { transform: 'scale(1.16) translate3d(3%, 2.5%, 0)' },
+        },
+        'ambar-separador-veil': {
+          '0%': { transform: 'translate3d(2.5%, 2%, 0)' },
+          '100%': { transform: 'translate3d(-2.5%, -2%, 0)' },
+        },
       },
       animation: {
         marquee: 'marquee 35s linear infinite',
         'fade-in': 'fadeIn 0.8s ease-out forwards',
         'rplk-kenburn': 'rplk-kenburn 28s ease-in-out infinite alternate',
+        'ambar-separador-bg': 'ambar-separador-bg 24s ease-in-out infinite alternate',
+        'ambar-separador-veil': 'ambar-separador-veil 32s ease-in-out infinite alternate',
       },
     },
   },

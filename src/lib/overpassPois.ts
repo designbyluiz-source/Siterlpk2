@@ -14,6 +14,24 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
 
 const R_METERS = 950
 
+/**
+ * Fragmentos no nome (sem acento, minúsculas) excluídos só em «mercados».
+ * Evita destacar um supermercado específico próximo mantendo os demais.
+ */
+const MERCADOS_NOME_EXCLUIR_SUBSTR: readonly string[] = ['miramar']
+
+function normalizeNomeParaFiltro(nome: string): string {
+  return nome
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+}
+
+function mercadoNomeExcluido(nome: string): boolean {
+  const n = normalizeNomeParaFiltro(nome)
+  return MERCADOS_NOME_EXCLUIR_SUBSTR.some((frag) => n.includes(frag))
+}
+
 /** Bares/cafés: não listar locais com mais de N minutos a pé (mesma fórmula que `tempoEstimado`). */
 export const MAX_WALK_MINUTES_BARES = 8
 
@@ -173,6 +191,7 @@ export async function fetchNearbyPois(
           : nomeFallbackBares(amenity))
     const d = haversineKm(originLat, originLon, lat, lon)
     if (category === 'bares' && estimatedTravelMinutes(d, 'walk') > MAX_WALK_MINUTES_BARES) continue
+    if (category === 'mercados' && mercadoNomeExcluido(nome)) continue
     rows.push({
       id: `${el.type[0]}${el.id}`,
       nome,

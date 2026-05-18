@@ -11,13 +11,15 @@ export default function RplkDepoimentos() {
   }
 
   return (
-    <section className="bg-rplk-editorial py-24 md:py-32 border-y border-rplk-ink/10" aria-labelledby="rplk-depo-heading">
-      <div className="mx-auto max-w-[1600px] px-5 md:px-10 lg:px-14 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+    <section className="bg-rplk-midnight py-[50px] md:py-[70px]" aria-labelledby="rplk-depo-heading">
+      <div className="rplk-editorial-container flex flex-col md:flex-row md:items-end md:justify-between gap-10 pb-12">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.45em] text-rplk-gold font-rplk-sans">Confiança</p>
+          <p className="font-rplk-sans text-[clamp(1rem,2vw,1.125rem)] font-normal uppercase tracking-rplk-nav text-rplk-gold">
+            Confiança
+          </p>
           <h2
             id="rplk-depo-heading"
-            className="mt-3 font-rplk-serif text-[clamp(2rem,3.5vw,3rem)] text-rplk-ink tracking-tight"
+            className="mt-5 font-rplk-serif font-normal italic text-[clamp(2.25rem,5vw,4.375rem)] leading-[1.03] text-rplk-white tracking-normal"
           >
             Depoimentos
           </h2>
@@ -25,7 +27,7 @@ export default function RplkDepoimentos() {
         <div className="flex gap-2 shrink-0">
           <button
             type="button"
-            className="h-11 w-11 rounded-full border border-rplk-ink/25 text-rplk-ink hover:bg-rplk-midnight hover:text-white hover:border-rplk-midnight transition"
+            className="h-11 w-11 rounded-full border border-white/25 text-white/70 hover:bg-white hover:text-rplk-midnight hover:border-white transition"
             aria-label="Anterior"
             onClick={() => scrollBy(-1)}
           >
@@ -33,7 +35,7 @@ export default function RplkDepoimentos() {
           </button>
           <button
             type="button"
-            className="h-11 w-11 rounded-full border border-rplk-ink/20 text-rplk-ink hover:bg-rplk-gold hover:text-rplk-midnight hover:border-rplk-gold transition"
+            className="h-11 w-11 rounded-full border border-white/20 text-white/70 hover:bg-rplk-gold hover:text-rplk-midnight hover:border-rplk-gold transition"
             aria-label="Próximo"
             onClick={() => scrollBy(1)}
           >
@@ -44,28 +46,32 @@ export default function RplkDepoimentos() {
 
       <div
         ref={scroller}
-        className="mt-12 flex gap-6 overflow-x-auto snap-x snap-mandatory px-5 md:px-10 lg:px-14 pb-2 scrollbar-thin"
-        style={{ scrollbarColor: 'rgba(37,37,37,0.2) transparent' }}
+        className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-[40px] pb-4 scrollbar-thin"
+        style={{ scrollbarColor: 'rgba(200,164,106,0.3) transparent' }}
       >
-        {depoimentos.map((d) => (
+        {depoimentos.map((d, i) => (
           <figure
             key={d.name}
-            className="snap-start min-w-[min(100%,380px)] max-w-md border border-rplk-ink/10 bg-rplk-white p-8 flex flex-col justify-between shadow-sm"
+            className={`snap-start min-w-[min(100%,380px)] max-w-md bg-white flex flex-col justify-between ${
+              i % 2 === 0
+                ? 'rounded-none rounded-br-[15px] rounded-tr-[15px]'
+                : 'rounded-none rounded-bl-[15px] rounded-tl-[15px]'
+            } ${i % 2 === 0 ? 'pl-[30px] pr-10 py-[30px]' : 'pr-[30px] pl-10 py-[30px]'}`}
           >
             <div>
               <div className="flex gap-1 text-rplk-gold" aria-label={`${d.rating} de 5 estrelas`}>
-                {Array.from({ length: d.rating }).map((_, i) => (
-                  <span key={i} aria-hidden>
+                {Array.from({ length: d.rating }).map((_, si) => (
+                  <span key={si} aria-hidden>
                     ★
                   </span>
                 ))}
               </div>
-              <blockquote className="mt-6 font-rplk-serif text-xl leading-snug text-rplk-ink/90">
-                “{d.quote}”
+              <blockquote className="mt-8 font-rplk-serif font-normal italic text-[19px] leading-[25.65px] text-rplk-ink/90">
+                "{d.quote}"
               </blockquote>
             </div>
-            <figcaption className="mt-8 text-sm font-rplk-sans text-rplk-ink/55">
-              <span className="block text-rplk-ink font-medium">{d.name}</span>
+            <figcaption className="mt-10 font-rplk-sans text-[18px] leading-6 font-normal text-rplk-ink/55">
+              <span className="block text-rplk-ink">{d.name}</span>
               {d.perfil}
             </figcaption>
           </figure>

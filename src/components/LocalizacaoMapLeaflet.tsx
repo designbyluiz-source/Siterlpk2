@@ -10,9 +10,10 @@ import {
   TileLayer,
   useMap,
 } from 'react-leaflet'
+import { AMBAR_LEAFLET_POSITION } from '../data/ambar-geolocation'
 import type { OsmPoi } from '../lib/overpassPois'
 
-const PROPERTY: [number, number] = [-25.4556, -49.2874]
+const PROPERTY = AMBAR_LEAFLET_POSITION
 
 /** Tiles padrão OpenStreetMap */
 const TILE_OSM = {

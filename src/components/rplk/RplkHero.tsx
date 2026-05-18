@@ -1,28 +1,26 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { heroSlides } from '../../data/rplk-content'
-
-function scrollToEmpreendimento(anchorId: string) {
-  const el = document.getElementById(anchorId)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-}
+import { heroAmbianceSlides } from '../../data/rplk-content'
 
 export default function RplkHero() {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      setIndex((i) => (i + 1) % heroSlides.length)
+      setIndex((i) => (i + 1) % heroAmbianceSlides.length)
     }, 7500)
     return () => window.clearInterval(id)
   }, [])
 
-  const slide = heroSlides[index]
+  const slide = heroAmbianceSlides[index]
 
   return (
-    <section className="relative min-h-[100svh] isolate overflow-hidden bg-rplk-midnight" aria-label="Destaques">
-      {heroSlides.map((s, i) => (
+    <section
+      className="group relative isolate overflow-hidden bg-rplk-midnight h-[100svh]"
+      aria-label="Abertura"
+    >
+      {/* Background slides */}
+      {heroAmbianceSlides.map((s, i) => (
         <div
           key={s.image}
           className={`absolute inset-0 transition-opacity duration-[1200ms] ease-out ${
@@ -38,77 +36,107 @@ export default function RplkHero() {
               transform: i === index ? 'scale(1.04) translateZ(0)' : 'scale(1.1) translateZ(0)',
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
         </div>
       ))}
 
-      {/* Clique na área da foto (atrás do conteúdo) rola até o empreendimento do slide atual */}
+      {/* Previous arrow */}
       <button
         type="button"
-        tabIndex={-1}
-        className="absolute inset-0 z-[5] cursor-pointer border-0 bg-transparent p-0"
-        aria-label={`Ir para o empreendimento ${slide.empreendimentoNome} na lista abaixo`}
-        onClick={() => scrollToEmpreendimento(slide.empreendimentoAnchorId)}
-      />
+        className="pointer-events-auto absolute left-[clamp(1rem,4.8vw,70px)] top-1/2 z-20 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center border border-solid border-white/85 bg-transparent text-[22px] font-light leading-none text-white opacity-0 shadow-none transition-opacity duration-[400ms] ease-out hover:border-rplk-gold hover:text-rplk-gold md:flex motion-safe:group-hover:opacity-100"
+        aria-label="Imagem de fundo anterior"
+        onClick={() => setIndex((i) => (i - 1 + heroAmbianceSlides.length) % heroAmbianceSlides.length)}
+      >
+        ‹
+      </button>
 
-      <div className="relative z-10 flex min-h-[100svh] flex-col pt-[100px] md:pt-[110px] pointer-events-none">
-        <div className="flex flex-1 flex-col justify-end pb-16 md:pb-24 px-5 md:px-10 lg:px-14">
-          <div className="ml-auto max-w-[min(100%,520px)] text-right pointer-events-auto">
-            <h1 className="font-rplk-serif text-rplk-white leading-[0.95] tracking-tight">
-              <span className="block text-[clamp(2.25rem,6vw,4.75rem)] font-medium">{slide.line1}</span>
-              <span className="block text-[clamp(2.25rem,6vw,4.75rem)] font-normal italic text-rplk-gold">
-                {slide.line2}
+      {/* Next arrow */}
+      <button
+        type="button"
+        className="pointer-events-auto absolute right-[clamp(1rem,4.8vw,70px)] top-1/2 z-20 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center border border-solid border-white/85 bg-transparent text-[22px] font-light leading-none text-white opacity-0 shadow-none transition-opacity duration-[400ms] ease-out hover:border-rplk-gold hover:text-rplk-gold md:flex motion-safe:group-hover:opacity-100"
+        aria-label="Próxima imagem de fundo"
+        onClick={() => setIndex((i) => (i + 1) % heroAmbianceSlides.length)}
+      >
+        ›
+      </button>
+
+      {/* Content — bottom-left aligned */}
+      <div className="relative z-10 flex h-full flex-col justify-end pb-12 md:pb-16">
+        <div className="rplk-editorial-container flex flex-col items-start gap-0">
+          {/* Badge */}
+          <p
+            key={`badge-${index}`}
+            className="font-rplk-serif font-normal italic text-[clamp(1rem,1.8vw,1.5rem)] leading-snug tracking-[3px] text-white/85"
+          >
+            {slide.badge}
+          </p>
+
+          {/* Main title — link se o slide tiver href */}
+          {slide.href ? (
+            <Link
+              key={`title-${index}`}
+              to={slide.href}
+              className="mt-3 font-rplk-sans font-normal uppercase tracking-[3px] text-white leading-[0.92] hover:text-rplk-gold transition-colors duration-300 group/title"
+              style={{ fontSize: 'clamp(5rem,18vw,10rem)' }}
+              aria-label={`Ver empreendimento ${slide.title}`}
+            >
+              <h1>{slide.title}</h1>
+              <span className="block mt-2 font-rplk-sans text-[clamp(0.75rem,1.4vw,1rem)] uppercase tracking-[3px] text-rplk-gold/80 group-hover/title:text-rplk-gold transition-colors">
+                Ver empreendimento →
               </span>
+            </Link>
+          ) : (
+            <h1
+              key={`title-${index}`}
+              className="mt-3 font-rplk-sans font-normal uppercase tracking-[3px] text-white leading-[0.92]"
+              style={{ fontSize: 'clamp(5rem,18vw,10rem)' }}
+            >
+              {slide.title}
             </h1>
-            <p className="mt-6 text-sm md:text-base text-white/80 font-rplk-sans max-w-md ml-auto leading-relaxed">
-              {slide.sub}
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-end gap-4">
-              <a
-                href="#empreendimentos"
-                className="rplk-btn-outline border-rplk-gold text-rplk-gold hover:bg-rplk-gold hover:text-rplk-midnight text-[11px] tracking-[0.28em] uppercase px-8 py-3.5"
-              >
-                Ver oportunidades
-              </a>
-            </div>
-          </div>
+          )}
 
-          <div className="mt-14 flex items-center justify-between gap-6 pointer-events-auto">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className="group flex h-12 w-12 items-center justify-center rounded-full border border-rplk-gold/45 text-rplk-gold transition hover:bg-rplk-gold hover:text-rplk-midnight hover:border-rplk-gold"
-                aria-label="Slide anterior"
-                onClick={() => setIndex((i) => (i - 1 + heroSlides.length) % heroSlides.length)}
-              >
-                <span className="text-lg leading-none">‹</span>
-              </button>
-              <button
-                type="button"
-                className="group flex h-12 w-12 items-center justify-center rounded-full border border-rplk-gold/45 text-rplk-gold transition hover:bg-rplk-gold hover:text-rplk-midnight hover:border-rplk-gold"
-                aria-label="Próximo slide"
-                onClick={() => setIndex((i) => (i + 1) % heroSlides.length)}
-              >
-                <span className="text-lg leading-none">›</span>
-              </button>
-            </div>
-            <div className="flex gap-2" role="tablist" aria-label="Slides">
-              {heroSlides.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  role="tab"
-                  aria-selected={i === index}
-                  className={`h-2 rounded-full transition-all duration-500 ${
-                    i === index ? 'w-8 bg-rplk-gold' : 'w-2 bg-white/30 hover:bg-rplk-gold/55'
-                  }`}
-                  aria-label={`Slide ${i + 1}`}
-                  onClick={() => setIndex(i)}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Sub */}
+          <p
+            key={`sub-${index}`}
+            className="mt-4 font-rplk-sans font-normal uppercase tracking-[3px] text-white/75 text-[clamp(0.75rem,1.4vw,1rem)]"
+          >
+            {slide.sub}
+          </p>
         </div>
+      </div>
+
+      {/* Bottom-right: dots + scroll arrow */}
+      <div className="absolute bottom-12 right-[clamp(1.5rem,4vw,60px)] z-20 flex flex-col items-center gap-6">
+        <div className="flex gap-3" role="tablist" aria-label="Selecionar imagem de fundo">
+          {heroAmbianceSlides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === index}
+              className={`h-[15px] w-[15px] shrink-0 rounded-full border-0 transition-colors duration-300 ${
+                i === index ? 'bg-rplk-gold' : 'bg-white/35 hover:bg-white/55'
+              }`}
+              aria-label={`Fundo ${i + 1} de ${heroAmbianceSlides.length}`}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
+        <Link
+          to="/#sobre"
+          className="flex text-white/75 transition-colors hover:text-rplk-gold motion-safe:animate-[fadeIn_1s_ease-out]"
+          aria-label="Descer para a próxima secção"
+        >
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" aria-hidden className="opacity-90">
+            <path
+              d="M30 14v26M17 31l13 13 13-13"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </Link>
       </div>
     </section>
   )

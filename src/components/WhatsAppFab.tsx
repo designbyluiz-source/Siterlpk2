@@ -9,6 +9,8 @@ const PRESETS = {
   )}`,
 } as const
 
+export const AMBAR_WHATSAPP_HREF = PRESETS.ambar
+
 export type WhatsAppFabPreset = keyof typeof PRESETS
 
 type WhatsAppFabProps = {
@@ -29,13 +31,14 @@ export default function WhatsAppFab({ preset = 'ambar' }: WhatsAppFabProps) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={aria}
-      style={{ backgroundColor: '#e7d1ac', color: '#3b3b3b' }}
-      className="fixed bottom-6 right-6 z-[70] flex flex-col items-center gap-3 p-5 rounded-[20px] shadow-[0_4px_18px_rgba(0,0,0,0.25)] hover:-translate-y-[2px] transition-transform"
+      className="fixed bottom-6 right-6 z-[70] block drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)] hover:-translate-y-[2px] transition-transform"
     >
-      <img src={ASSETS.whatsapp} alt="" aria-hidden className="h-[33px] w-[33px]" />
-      <span className="font-bold text-[10px] uppercase tracking-wide whitespace-nowrap" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
-        ENTRE EM CONTATO
-      </span>
+      <img
+        src={ASSETS.whatsapp}
+        alt=""
+        aria-hidden
+        className="h-14 w-14 drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
+      />
     </a>
   )
 }

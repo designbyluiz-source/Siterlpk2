@@ -26,15 +26,22 @@
    ============================================================ */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background-color: var(--ambar-cream);
   color: var(--ambar-navy);
   font-family: 'Manrope', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 /* Enquanto a home RPLK está ativa, o canvas do navegador acompanha o azul (evita “anel” creme no overscroll) */
@@ -56,6 +63,12 @@ body.rplk-site-home {
   .container-ambar {
     @apply mx-auto w-full px-6 md:px-20;
     max-width: 1446px;
+  }
+
+  /** Max ~1444px + padding lateral generoso — home / páginas RPLK (referência editorial). */
+  .rplk-editorial-container {
+    @apply mx-auto w-full px-5 md:px-10 lg:px-[120px];
+    max-width: 1444px;
   }
 
   .heading-section {

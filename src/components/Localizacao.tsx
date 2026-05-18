@@ -11,10 +11,12 @@ import {
   formatOsrmDuration,
   geocodeAddress,
 } from '../lib/osmRouting'
+import { AMBAR_LEAFLET_POSITION } from '../data/ambar-geolocation'
 import LocalizacaoMapLeaflet from './LocalizacaoMapLeaflet'
+import AmbarRevealItem from './AmbarRevealItem'
 
-const MAP_LAT = -25.4556
-const MAP_LON = -49.2874
+const MAP_LAT = AMBAR_LEAFLET_POSITION[0]
+const MAP_LON = AMBAR_LEAFLET_POSITION[1]
 
 const EMPREENDIMENTO_ADDRESS =
   'Rua Palmeiras, 691, Água Verde, Curitiba, PR 80620-110, Brasil'
@@ -41,15 +43,15 @@ const FALLBACK_POIS: Record<CategoriaLocalizacao, OsmPoi[]> = {
       id: 'fb-m1',
       nome: 'Mercado (dados de exemplo)',
       tempo: '≈ 4 min de carro',
-      lat: -25.456,
-      lng: -49.288,
+      lat: -25.4616153,
+      lng: -49.285561,
     },
     {
       id: 'fb-m2',
       nome: 'Supermercado próximo (exemplo)',
       tempo: '≈ 5 min de carro',
-      lat: -25.457,
-      lng: -49.289,
+      lat: -25.4623153,
+      lng: -49.286261,
     },
   ],
   farmacias: [
@@ -57,15 +59,15 @@ const FALLBACK_POIS: Record<CategoriaLocalizacao, OsmPoi[]> = {
       id: 'fb-f1',
       nome: 'Farmácia (dados de exemplo)',
       tempo: '≈ 3 min de carro',
-      lat: -25.456,
-      lng: -49.287,
+      lat: -25.4612153,
+      lng: -49.284261,
     },
     {
       id: 'fb-f2',
       nome: 'Farmácia 24h (exemplo)',
       tempo: '≈ 6 min de carro',
-      lat: -25.458,
-      lng: -49.285,
+      lat: -25.4602153,
+      lng: -49.282861,
     },
   ],
   bares: [
@@ -73,15 +75,15 @@ const FALLBACK_POIS: Record<CategoriaLocalizacao, OsmPoi[]> = {
       id: 'fb-b1',
       nome: 'Café (dados de exemplo)',
       tempo: '≈ 3 min a pé',
-      lat: -25.4555,
-      lng: -49.2875,
+      lat: -25.4609153,
+      lng: -49.284861,
     },
     {
       id: 'fb-b2',
       nome: 'Bar (exemplo)',
       tempo: '≈ 5 min a pé',
-      lat: -25.4565,
-      lng: -49.2885,
+      lat: -25.4618153,
+      lng: -49.285261,
     },
   ],
 }
@@ -347,16 +349,20 @@ export default function Localizacao() {
       data-node-id="334:169"
     >
       <div className="container-ambar">
-        <h2 className="heading-section text-ambar-terracotta mb-4">LOCALIZAÇÃO</h2>
+        <AmbarRevealItem preset="skew-up" once={false} threshold={0.06}>
+          <h2 className="heading-section text-ambar-terracotta mb-4">LOCALIZAÇÃO</h2>
+        </AmbarRevealItem>
 
-        <p className="mb-6 max-w-3xl font-ui text-[15px] md:text-[17px] leading-relaxed text-ambar-gray">
-          <span className="font-bold text-ambar-navy">Rua Palmeiras, 691</span>
-          {' — '}
-          Água Verde — Curitiba/PR — CEP 80620-110
-        </p>
+        <AmbarRevealItem preset="fade-right" delayMs={70} once={false}>
+          <p className="mb-6 max-w-3xl font-ui text-[15px] md:text-[17px] leading-relaxed text-ambar-gray">
+            <span className="font-bold text-ambar-navy">Rua Palmeiras, 691</span>
+            {' — '}
+            Água Verde — Curitiba/PR — CEP 80620-110
+          </p>
+        </AmbarRevealItem>
 
         <div className="grid items-start gap-6 md:gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.65fr)] lg:items-start lg:gap-8">
-          <div className="flex min-w-0 flex-col gap-2">
+          <AmbarRevealItem preset="blur-rise" delayMs={90} once={false} className="flex min-w-0 flex-col gap-2">
             <div
               className="relative w-full min-h-0 overflow-hidden rounded-[14px] border border-ambar-navy/25 bg-ambar-cream/40 shadow-[0px_4px_11px_0px_rgba(0,45,79,0.1)]"
               style={{ height: MAP_BOX_HEIGHT }}
@@ -378,12 +384,12 @@ export default function Localizacao() {
                 aria-live="polite"
                 className="font-ui rounded-xl border border-ambar-navy/20 bg-white/80 px-4 py-3 shadow-[0_2px_12px_rgba(0,45,79,0.08)] backdrop-blur-[2px]"
               >
-                <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-ambar-navy/70 md:text-left">
+                <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-ambar-navy/70">
                   Rota até o Âmbar
                 </p>
-                <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-4">
-                  <div className="flex flex-1 flex-wrap items-end justify-center gap-4 sm:justify-start sm:gap-6">
-                    <div className="min-w-[7rem] text-center sm:text-left">
+                <div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
+                  <div className="flex flex-1 flex-wrap items-center justify-center gap-4 sm:gap-6">
+                    <div className="min-w-[7rem] text-center">
                       <p className="mb-0.5 text-[11px] font-medium text-ambar-gray">Distância</p>
                       <p className="text-[1.65rem] font-bold leading-none tracking-tight text-ambar-navy tabular-nums md:text-[1.85rem]">
                         {formatOsrmDistance(routeSummary.distanceM)}
@@ -393,22 +399,22 @@ export default function Localizacao() {
                       className="hidden h-12 w-px shrink-0 bg-ambar-navy/15 sm:block"
                       aria-hidden
                     />
-                    <div className="min-w-[7rem] text-center sm:text-left">
+                    <div className="min-w-[7rem] text-center">
                       <p className="mb-0.5 text-[11px] font-medium text-ambar-gray">Tempo estimado</p>
                       <p className="text-[1.65rem] font-bold leading-none tracking-tight text-ambar-terracotta tabular-nums md:text-[1.85rem]">
                         {formatOsrmDuration(routeSummary.durationS)}
                       </p>
                     </div>
                   </div>
-                  <p className="text-center text-[11px] text-ambar-gray sm:max-w-[11rem] sm:text-right">
+                  <p className="w-full text-center text-[11px] text-ambar-gray sm:max-w-[11rem] sm:w-auto">
                     Trajeto de {routeSummary.modeLabel}
                   </p>
                 </div>
               </div>
             )}
-          </div>
+          </AmbarRevealItem>
 
-          <div className="flex min-h-0 w-full max-w-[440px] flex-col gap-2.5 lg:max-w-none lg:h-[clamp(260px,_48vw,_440px)] lg:min-h-0">
+          <AmbarRevealItem preset="glide-left" delayMs={110} once={false} className="flex min-h-0 w-full max-w-[440px] flex-col gap-2.5 lg:max-w-none lg:h-[clamp(260px,_48vw,_440px)] lg:min-h-0">
             <div className="shrink-0">
               <p className="mb-2 text-center font-ui text-[11px] font-semibold uppercase tracking-[0.12em] text-ambar-navy/80">
                 Perto do Âmbar
@@ -457,7 +463,7 @@ export default function Localizacao() {
               </div>
 
               <ul className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-                {listaLateral.map((poi) => {
+                {listaLateral.map((poi, idx) => {
                   const active = hoveredPoi === poi.id
                   return (
                     <li
@@ -469,7 +475,15 @@ export default function Localizacao() {
                       onMouseEnter={() => setHoveredPoi(poi.id)}
                       onMouseLeave={() => setHoveredPoi(null)}
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <AmbarRevealItem
+                        preset="tilt-in"
+                        staggerIndex={idx}
+                        staggerMs={42}
+                        once={false}
+                        threshold={0.02}
+                        rootMargin="0px 0px 25% 0px"
+                      >
+                        <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
                           <p className="font-ui text-[14px] font-semibold leading-snug text-ambar-gray line-clamp-2">
                             {poi.nome}
@@ -486,7 +500,8 @@ export default function Localizacao() {
                             Mapa
                           </button>
                         </div>
-                      </div>
+                        </div>
+                      </AmbarRevealItem>
                     </li>
                   )
                 })}
@@ -509,7 +524,7 @@ export default function Localizacao() {
                 Rota a partir de um endereço
               </button>
             </div>
-          </div>
+          </AmbarRevealItem>
         </div>
       </div>
 
@@ -558,7 +573,7 @@ export default function Localizacao() {
               placeholder="Ex.: Batel, Curitiba ou Rua XV de Novembro, 129"
               className="mb-3 w-full rounded-md border border-ambar-gray/40 bg-white px-3 py-2 font-ui text-sm text-ambar-ink"
             />
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
               <button
                 type="button"
                 disabled={calculatingRoute}

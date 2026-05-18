@@ -32,6 +32,16 @@ export type PavimentoPlantaData = {
   /** Largura e altura em px da imagem base (para aspect-ratio). */
   mapAspect: readonly [number, number]
   unidades: UnidadePlanta[]
+  /**
+   * Mescla do PNG de destaque sobre a planta completa (default: source-over).
+   * Evite modos que clareiem o fundo (`screen`) se a referência for o escurecimento dos demais pavimentos.
+   */
+  mapDestaqueMixBlendMode?: 'overlay' | 'soft-light' | 'multiply'
+  /**
+   * Com uma unidade em destaque no mapa, escurece a planta completa (ex.: `0.72`).
+   * Útil quando o PNG de destaque é só realce semitransparente (terraço), alinhando ao fundo mais escuro das outras abas.
+   */
+  mapBaseBrightnessWhenDestaque?: number
 }
 
 import { formatAreaPrivativaM2, getPlantaUnidadeCatalogRow } from './plantas-unidades-catalog'
@@ -41,6 +51,7 @@ const BASE_TERREO = '/plantas/terreo'
 const BASE_34 = '/plantas/terceiro-quarto'
 const BASE_5 = '/plantas/quinto'
 const BASE_68 = '/plantas/sexto-ao-oitavo'
+const BASE_TERRACO = '/plantas/terraco'
 
 function catalogKeyUnidade(numero: string): string {
   return numero.split('-')[0] ?? numero
@@ -327,6 +338,40 @@ export const sextoAoOitavoPavimento: PavimentoPlantaData = {
   }),
 }
 
+/**
+ * Terraço: `planta-completa.png` 500×313 (humanizada).
+ * Duas zonas — Espaço gourmet (esq.) e Coworking (dir.) — com hitboxes separadas
+ * (bbox da diferença exclusiva de cada `*-destaque.png` vs. planta completa, para hover
+ * igual aos outros pavimentos).
+ */
+export const terracoPavimento: PavimentoPlantaData = {
+  id: 'terraco',
+  mapaCompleta: `${BASE_TERRACO}/planta-completa.png`,
+  mapAspect: [500, 313],
+  mapBaseBrightnessWhenDestaque: 0.72,
+  unidades: [
+    {
+      numero: 'Gourmet',
+      tipologia: 'Espaço gourmet',
+      area: 'Área comum',
+      temDecorado: false,
+      plantaSrc: `${BASE_TERRACO}/gourmet-planta.png`,
+      destaqueSrc: `${BASE_TERRACO}/gourmet-destaque.png`,
+      hitbox: { left: 6.2, top: 11.82, width: 23.2, height: 60.7 },
+    },
+    {
+      numero: 'Coworking',
+      tipologia: 'Coworking',
+      area: 'Área comum',
+      temDecorado: false,
+      plantaSrc: `${BASE_TERRACO}/coworking-planta.png`,
+      destaqueSrc: `${BASE_TERRACO}/coworking-destaque.png`,
+      hitbox: { left: 62.8, top: 11.82, width: 23.0, height: 60.7 },
+      mapZIndex: 3,
+    },
+  ],
+}
+
 export type PavimentoTab = { id: string; label: string }
 
 export const PAVIMENTO_TABS: PavimentoTab[] = [
@@ -367,6 +412,8 @@ export function getPavimentoConfig(pavimentoId: string): PavimentoConfig {
       return { kind: 'interactive', data: terceiroQuartoPavimento }
     case '6-8':
       return { kind: 'interactive', data: sextoAoOitavoPavimento }
+    case 'terraco':
+      return { kind: 'interactive', data: terracoPavimento }
     default:
       return { kind: 'placeholder' }
   }

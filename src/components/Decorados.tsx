@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ASSETS } from '../assets/figma'
 import { PLANTAS_SELECIONAR_PAVIMENTO, type PlantasSelecionarPavimentoDetail } from '../data/plantas-pavimentos'
 import ImageLightbox from './ImageLightbox'
+import AmbarRevealItem from './AmbarRevealItem'
 
 type Decorado = {
   label: string
@@ -45,6 +46,11 @@ const DECORADOS: readonly Decorado[] = [
 
 const DECORADOS_IMGS = DECORADOS.map((d) => d.img)
 
+const PLANTA_CLIQUE_DICA = 'Clique na planta para ver com detalhes'
+
+/** Sem trocar o decorado manualmente, avança para o próximo após este intervalo. */
+const AUTO_ADVANCE_DECORADO_MS = 5000
+
 function irParaPlantaDoDecorado(d: Decorado) {
   window.dispatchEvent(
     new CustomEvent(PLANTAS_SELECIONAR_PAVIMENTO, {
@@ -61,6 +67,14 @@ export default function Decorados() {
   const [ativaIdx, setAtivaIdx] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const ativa = DECORADOS[ativaIdx]
+
+  useEffect(() => {
+    if (lightboxOpen || DECORADOS.length <= 1) return
+    const id = window.setTimeout(() => {
+      setAtivaIdx((i) => (i + 1) % DECORADOS.length)
+    }, AUTO_ADVANCE_DECORADO_MS)
+    return () => window.clearTimeout(id)
+  }, [ativaIdx, lightboxOpen])
 
   return (
     <section
@@ -84,33 +98,40 @@ export default function Decorados() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-[47%] to-black" />
       </div>
 
-      <div className="flex flex-wrap items-end justify-center gap-4 md:gap-6 w-full">
+      <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 w-full">
         {/* Miniatura: clicar leva à planta da unidade ativa. */}
-        <button
+        <AmbarRevealItem preset="glide-right" once={false} className="hidden md:flex flex-none">
+          <button
           type="button"
           onClick={() => irParaPlantaDoDecorado(ativa)}
-          className="hidden md:block relative shrink-0 h-[148px] w-[118px] overflow-hidden rounded-sm bg-white/95 ring-1 ring-white/40 shadow-lg hover:ring-white/80 focus-visible:ring-2 focus-visible:ring-white outline-none transition"
+          className="hidden md:flex flex-col items-center gap-0 shrink-0 rounded-sm bg-transparent outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/90 hover:opacity-95 transition-opacity"
           aria-label={`Abrir planta de ${ativa.label} na secção Plantas`}
           title={`Ver planta de ${ativa.label}`}
         >
-          {DECORADOS.map((d, i) => (
-            <img
-              key={d.plantaThumb}
-              src={d.plantaThumb}
-              alt={i === ativaIdx ? `Miniatura da planta — ${d.label}` : ''}
-              className="absolute inset-0 h-full w-full object-contain p-1.5 transition-opacity duration-300 ease-out"
-              style={{ opacity: i === ativaIdx ? 1 : 0 }}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              aria-hidden={i !== ativaIdx}
-            />
-          ))}
+          <span className="relative block h-[252px] w-[200px] overflow-hidden rounded-sm">
+            {DECORADOS.map((d, i) => (
+              <img
+                key={d.plantaThumb}
+                src={d.plantaThumb}
+                alt={i === ativaIdx ? `Miniatura da planta — ${d.label}` : ''}
+                className="absolute inset-0 h-full w-full object-contain p-0 transition-opacity duration-300 ease-out drop-shadow-[0_2px_14px_rgba(0,0,0,0.45)]"
+                style={{ opacity: i === ativaIdx ? 1 : 0 }}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                aria-hidden={i !== ativaIdx}
+              />
+            ))}
+          </span>
+          <span className="max-w-[200px] -mt-6 font-ui text-[10px] font-medium text-center leading-[1.15] tracking-tight text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">
+            {PLANTA_CLIQUE_DICA}
+          </span>
         </button>
+        </AmbarRevealItem>
 
-        <div className="flex flex-col md:flex-row flex-1 items-center justify-center gap-4 md:gap-11 px-4 md:px-[80px]">
+        <AmbarRevealItem preset="blur-rise" delayMs={90} once={false} className="flex flex-col md:flex-row flex-1 items-center justify-center gap-4 md:gap-11 px-4 md:px-[80px]">
           <h2 className="heading-section text-white whitespace-nowrap">DECORADOS</h2>
 
           <div
-            className="flex flex-wrap gap-1 md:gap-[22px] justify-center"
+            className="flex flex-wrap items-center justify-center gap-1 md:gap-[22px]"
             role="tablist"
             aria-label="Alternar entre os decorados"
           >
@@ -133,9 +154,10 @@ export default function Decorados() {
               </button>
             ))}
           </div>
-        </div>
+        </AmbarRevealItem>
 
-        <button
+        <AmbarRevealItem preset="tilt-in" delayMs={140} once={false} className="flex shrink-0">
+          <button
           type="button"
           onClick={() => setLightboxOpen(true)}
           className="shrink-0 h-[50px] w-[50px] grid place-items-center hover:opacity-80 transition-opacity"
@@ -148,6 +170,7 @@ export default function Decorados() {
             aria-hidden
           />
         </button>
+        </AmbarRevealItem>
       </div>
 
       <ImageLightbox
@@ -167,20 +190,20 @@ export default function Decorados() {
                 setLightboxOpen(false)
                 irParaPlantaDoDecorado(d)
               }}
-              className="absolute bottom-4 left-4 md:bottom-6 md:left-6 z-[2] flex flex-col items-stretch rounded-sm bg-white/95 ring-1 ring-white/40 shadow-xl hover:ring-white/80 focus-visible:ring-2 focus-visible:ring-white outline-none transition"
+              className="absolute bottom-4 left-4 z-[3] md:bottom-6 md:left-6 flex flex-col items-center gap-0 shrink-0 rounded-sm bg-transparent outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/90 hover:opacity-95 transition-opacity pointer-events-auto"
               aria-label={`Abrir planta de ${d.label} na secção Plantas`}
               title={`Ver planta de ${d.label}`}
             >
-              <span className="relative block h-[170px] w-[150px] md:h-[200px] md:w-[180px]">
+              <span className="relative block h-[200px] w-[158px] overflow-hidden rounded-sm md:h-[236px] md:w-[188px]">
                 <img
-                  key={d.plantaThumb}
                   src={d.plantaThumb}
-                  alt={`Miniatura da planta — ${d.label}`}
-                  className="absolute inset-0 h-full w-full object-contain p-2"
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 h-full w-full object-contain p-0 drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)]"
                 />
               </span>
-              <span className="border-t border-ambar-gray/15 px-2 py-1.5 text-center font-ui text-[11px] uppercase tracking-wider text-ambar-navy">
-                Planta · {d.label}
+              <span className="max-w-[188px] -mt-5 md:-mt-6 font-ui text-[10px] font-medium text-center leading-[1.15] tracking-tight text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.85)]">
+                {PLANTA_CLIQUE_DICA}
               </span>
             </button>
           )

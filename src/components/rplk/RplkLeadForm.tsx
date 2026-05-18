@@ -10,33 +10,31 @@ export default function RplkLeadForm() {
   return (
     <section
       id="contato"
-      className="bg-rplk-white py-24 text-rplk-ink [color-scheme:light] md:py-32 scroll-mt-[100px]"
+      className="bg-rplk-white py-[70px] text-rplk-ink [color-scheme:light] md:py-[90px] scroll-mt-[88px]"
       aria-labelledby="rplk-form-heading"
     >
       <div className="mx-auto max-w-[720px] px-5 md:px-8">
         <h2
           id="rplk-form-heading"
-          className="font-rplk-serif text-[clamp(1.75rem,4vw,2.75rem)] text-center tracking-tight text-rplk-ink"
+          className="font-rplk-serif font-normal italic text-[clamp(1.75rem,4vw,3rem)] text-center tracking-normal text-rplk-ink leading-[1.1]"
         >
           Encontre o investimento ideal.
         </h2>
 
         <form
-          className="mt-14 space-y-10 font-rplk-sans text-rplk-ink"
+          className="mt-14 space-y-10 font-rplk-sans text-[16px] text-rplk-ink"
           onSubmit={(e) => {
             e.preventDefault()
           }}
         >
-          <fieldset className="space-y-3">
-            <legend className="text-[10px] uppercase tracking-[0.35em] text-rplk-gold">Segmentação</legend>
-            <div className="flex flex-wrap gap-3">
+          <fieldset className="space-y-4">
+            <legend className="text-[14px] font-normal tracking-normal text-rplk-gold">Segmentação</legend>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-center">
               {(['Quero investir', 'Quero morar', 'Sou parceiro'] as const).map((s) => (
                 <label
                   key={s}
-                  className={`cursor-pointer border-b-2 pb-2 text-[12px] uppercase tracking-[0.2em] transition ${
-                    segmento === s
-                      ? 'border-rplk-gold text-rplk-ink'
-                      : 'border-transparent text-rplk-ink/65 hover:text-rplk-ink'
+                  className={`cursor-pointer border-b border-rplk-ink/15 pb-2 text-[14px] transition ${
+                    segmento === s ? 'border-rplk-gold text-rplk-ink' : 'border-transparent text-rplk-ink/65 hover:text-rplk-ink'
                   }`}
                 >
                   <input
@@ -54,7 +52,7 @@ export default function RplkLeadForm() {
 
           <div className="grid gap-10 md:grid-cols-2">
             <label className="block space-y-2">
-              <span className="text-[10px] font-medium uppercase tracking-[0.35em] text-rplk-ink">Nome</span>
+              <span className="text-[14px] font-normal tracking-normal text-rplk-ink">Nome</span>
               <input
                 name="nome"
                 required
@@ -64,7 +62,7 @@ export default function RplkLeadForm() {
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-[10px] font-medium uppercase tracking-[0.35em] text-rplk-ink">E-mail</span>
+              <span className="text-[14px] font-normal tracking-normal text-rplk-ink">E-mail</span>
               <input
                 name="email"
                 type="email"
@@ -75,7 +73,7 @@ export default function RplkLeadForm() {
               />
             </label>
             <label className="block space-y-2 md:col-span-2">
-              <span className="text-[10px] font-medium uppercase tracking-[0.35em] text-rplk-ink">WhatsApp</span>
+              <span className="text-[14px] font-normal tracking-normal text-rplk-ink">WhatsApp</span>
               <input
                 name="whatsapp"
                 type="tel"
@@ -88,7 +86,7 @@ export default function RplkLeadForm() {
           </div>
 
           <label className="block space-y-2">
-            <span className="text-[10px] font-medium uppercase tracking-[0.35em] text-rplk-ink">Faixa de investimento</span>
+            <span className="text-[14px] font-normal tracking-normal text-rplk-ink">Faixa de investimento</span>
             <select
               name="faixa"
               required
@@ -108,7 +106,7 @@ export default function RplkLeadForm() {
           </label>
 
           <label className="block space-y-2">
-            <span className="text-[10px] font-medium uppercase tracking-[0.35em] text-rplk-ink">Objetivo</span>
+            <span className="text-[14px] font-normal tracking-normal text-rplk-ink">Objetivo</span>
             <select
               name="objetivo"
               required

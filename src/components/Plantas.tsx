@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ASSETS } from '../assets/figma'
+import AmbarRevealItem from './AmbarRevealItem'
 import {
   getPavimentoConfig,
   isPavimentoTabId,
@@ -11,7 +12,7 @@ import {
   type UnidadePlanta,
 } from '../data/plantas-pavimentos'
 
-const initialConfig = getPavimentoConfig('2')
+const initialConfig = getPavimentoConfig('terreo')
 
 function disponibilidadeDe(u: UnidadePlanta): DisponibilidadeUnidade {
   return u.disponibilidade ?? 'disponivel'
@@ -24,6 +25,166 @@ function ariaLabelUnidade(u: UnidadePlanta): string {
   return `Unidade ${u.numero}`
 }
 
+/** Retângulo da imagem com `object-contain` dentro do content box do contentor. */
+function objectContainRect(
+  cw: number,
+  ch: number,
+  nw: number,
+  nh: number,
+): { drawW: number; drawH: number; ox: number; oy: number } {
+  if (cw <= 0 || ch <= 0 || nw <= 0 || nh <= 0) {
+    return { drawW: cw, drawH: ch, ox: 0, oy: 0 }
+  }
+  const cr = cw / ch
+  const ir = nw / nh
+  if (ir > cr) {
+    const drawW = cw
+    const drawH = cw / ir
+    return { drawW, drawH, ox: 0, oy: (ch - drawH) / 2 }
+  }
+  const drawH = ch
+  const drawW = ch * ir
+  return { drawW, drawH, ox: (cw - drawW) / 2, oy: 0 }
+}
+
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n))
+}
+
+const PLANTA_ZOOM_LENS_PX = 112
+const PLANTA_ZOOM_SCALE = 1
+
+/**
+ * Planta da unidade com lupa no hover (estilo e-commerce), só em apontador fino.
+ */
+function PlantaUnidadeComLupa({
+  src,
+  alt,
+  vendido,
+}: {
+  src: string
+  alt: string
+  vendido: boolean
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const [natural, setNatural] = useState<{ w: number; h: number } | null>(null)
+  const [fineHover, setFineHover] = useState(false)
+  const [lensOn, setLensOn] = useState(false)
+  const [cursor, setCursor] = useState({ x: 0, y: 0 })
+  const [boxTick, setBoxTick] = useState(0)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const apply = () => setFineHover(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
+  const updateFromEvent = useCallback((e: React.PointerEvent) => {
+    if (!fineHover || e.pointerType !== 'mouse') return
+    const el = wrapRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    setCursor({ x: e.clientX - r.left, y: e.clientY - r.top })
+  }, [fineHover])
+
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setBoxTick((t) => t + 1))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const lensLayout = useMemo(() => {
+    const el = wrapRef.current
+    if (!el || !natural || !lensOn) return null
+    void boxTick
+    const cw = el.clientWidth
+    const ch = el.clientHeight
+    const { drawW, drawH, ox, oy } = objectContainRect(cw, ch, natural.w, natural.h)
+    const L = Math.min(PLANTA_ZOOM_LENS_PX, drawW * 0.85, drawH * 0.85)
+    if (L < 48 || drawW < 24 || drawH < 24) return null
+
+    const cx = clamp(cursor.x, ox + L / 2, ox + drawW - L / 2)
+    const cy = clamp(cursor.y, oy + L / 2, oy + drawH - L / 2)
+
+    const ix = clamp(((cx - ox) / drawW) * natural.w, 0, natural.w)
+    const iy = clamp(((cy - oy) / drawH) * natural.h, 0, natural.h)
+    const Z = PLANTA_ZOOM_SCALE
+
+    const bgUrl = `url("${src.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}")`
+
+    return {
+      L,
+      left: cx - L / 2,
+      top: cy - L / 2,
+      bgUrl,
+      bgSizeW: natural.w * Z,
+      bgSizeH: natural.h * Z,
+      bgPosX: L / 2 - ix * Z,
+      bgPosY: L / 2 - iy * Z,
+    }
+  }, [natural, lensOn, cursor.x, cursor.y, src, boxTick])
+
+  return (
+    <div
+      ref={wrapRef}
+      className={[
+        'relative mx-auto aspect-square w-full max-w-[280px] shrink-0 overflow-hidden lg:mx-0 lg:max-h-[min(58vh,420px)] lg:max-w-full lg:w-full lg:self-center',
+        fineHover ? 'cursor-crosshair' : '',
+      ].join(' ')}
+      onPointerEnter={(e) => {
+        if (!fineHover || e.pointerType !== 'mouse') return
+        setLensOn(true)
+        updateFromEvent(e)
+      }}
+      onPointerLeave={() => setLensOn(false)}
+      onPointerMove={(e) => {
+        updateFromEvent(e)
+      }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        onLoad={(ev) => {
+          const im = ev.currentTarget
+          setNatural({ w: im.naturalWidth, h: im.naturalHeight })
+        }}
+        className="absolute inset-0 h-full w-full object-contain object-center bg-transparent select-none"
+      />
+      {lensLayout ? (
+        <div
+          className="pointer-events-none absolute z-[2] overflow-hidden rounded-[3px] border-2 border-white/95 shadow-[0_6px_24px_rgba(0,45,79,0.22)] ring-1 ring-ambar-navy/20"
+          style={{
+            width: lensLayout.L,
+            height: lensLayout.L,
+            left: lensLayout.left,
+            top: lensLayout.top,
+            backgroundImage: lensLayout.bgUrl,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: `${lensLayout.bgSizeW}px ${lensLayout.bgSizeH}px`,
+            backgroundPosition: `${lensLayout.bgPosX}px ${lensLayout.bgPosY}px`,
+          }}
+          aria-hidden
+        />
+      ) : null}
+      {vendido ? (
+        <div
+          className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center"
+          aria-hidden
+        >
+          <span className="-rotate-[32deg] select-none whitespace-nowrap font-ui text-[clamp(1.75rem,5.5vw,2.75rem)] font-black uppercase tracking-[0.2em] text-red-800/[0.38] [text-shadow:0_0_1px_rgba(255,255,255,0.5)]">
+            Vendido
+          </span>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 /** Duração do crossfade entre planta completa e destaque (e entre destaques). */
 const MAP_FADE_MS = 440
 /** Troca o PNG do destaque com o overlay já quase transparente, para evitar “corte” brusco. */
@@ -33,6 +194,7 @@ function PlantaMapInteractive({
   interactive,
   destaqueRendered,
   destaqueLayerOpacity,
+  dimMapBaseForDestaque,
   onMapPointerEnter,
   onMapPointerLeave,
   onUnitPointerEnter,
@@ -43,6 +205,8 @@ function PlantaMapInteractive({
   interactive: PavimentoPlantaData
   destaqueRendered: UnidadePlanta | null
   destaqueLayerOpacity: number
+  /** Mantém o fundo escurecido enquanto há seleção/hover no mapa (evita “piscar” ao trocar unidade). */
+  dimMapBaseForDestaque: boolean
   onMapPointerEnter: () => void
   onMapPointerLeave: () => void
   onUnitPointerEnter: (u: UnidadePlanta) => void
@@ -50,36 +214,53 @@ function PlantaMapInteractive({
   onUnitFocus: (u: UnidadePlanta) => void
   handleUnitFocusBlur: (e: React.FocusEvent<HTMLButtonElement>) => void
 }) {
+  const baseBrightness =
+    interactive.mapBaseBrightnessWhenDestaque != null && dimMapBaseForDestaque
+      ? interactive.mapBaseBrightnessWhenDestaque
+      : 1
+
+  const mapAr = interactive.mapAspect[0] / interactive.mapAspect[1]
+
   return (
     <div
-      className="relative w-full overflow-visible py-2"
+      className="relative mx-auto max-h-[min(72vh,640px)] w-[min(100%,calc(min(72vh,640px)*var(--map-ar)))] overflow-visible py-2"
       style={{
+        ['--map-ar' as string]: String(mapAr),
         aspectRatio: `${interactive.mapAspect[0]} / ${interactive.mapAspect[1]}`,
       }}
       data-planta-map
       onPointerEnter={onMapPointerEnter}
       onPointerLeave={onMapPointerLeave}
     >
-      <img
-        src={interactive.mapaCompleta}
-        alt="Planta humanizada do pavimento"
-        className="absolute inset-0 z-0 h-full w-full object-contain object-center pointer-events-none select-none bg-transparent"
-        draggable={false}
-      />
-      {destaqueRendered ? (
+      <div className="absolute inset-0 z-0 isolate">
         <img
-          key={destaqueRendered.numero}
-          src={destaqueRendered.destaqueSrc}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 z-[1] h-full w-full object-contain object-center pointer-events-none select-none bg-transparent transition-opacity ease-in-out"
+          src={interactive.mapaCompleta}
+          alt="Planta humanizada do pavimento"
+          className="absolute inset-0 z-0 h-full w-full object-contain object-center pointer-events-none select-none bg-transparent motion-safe:transition-[filter]"
           style={{
-            opacity: destaqueLayerOpacity,
+            filter: baseBrightness < 1 ? `brightness(${baseBrightness})` : undefined,
             transitionDuration: `${MAP_FADE_MS}ms`,
           }}
           draggable={false}
         />
-      ) : null}
+        {destaqueRendered ? (
+          <img
+            key={destaqueRendered.numero}
+            src={destaqueRendered.destaqueSrc}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 z-[1] h-full w-full object-contain object-center pointer-events-none select-none bg-transparent transition-opacity ease-in-out"
+            style={{
+              opacity: destaqueLayerOpacity,
+              transitionDuration: `${MAP_FADE_MS}ms`,
+              ...(interactive.mapDestaqueMixBlendMode
+                ? { mixBlendMode: interactive.mapDestaqueMixBlendMode }
+                : {}),
+            }}
+            draggable={false}
+          />
+        ) : null}
+      </div>
       {interactive.unidades.map((u) => {
         const disp = disponibilidadeDe(u)
         const indisponivel = disp !== 'disponivel'
@@ -116,7 +297,12 @@ function PlantaMapInteractive({
                   aria-hidden
                 />
                 <span
-                  className="pointer-events-none absolute top-1 right-1 max-w-[calc(100%-8px)] rounded border border-ambar-gray/60 bg-ambar-cream/95 px-1.5 py-0.5 text-left font-ui text-[9px] font-bold uppercase leading-tight tracking-wide text-ambar-gray shadow-sm opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-visible:opacity-100"
+                  className={[
+                    'pointer-events-none absolute top-1 right-1 max-w-[calc(100%-8px)] rounded border px-1.5 py-0.5 text-left font-ui text-[9px] font-bold uppercase leading-tight tracking-wide shadow-sm opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-visible:opacity-100',
+                    disp === 'vendido'
+                      ? 'border-red-800/45 bg-red-50/95 text-red-900'
+                      : 'border-ambar-gray/60 bg-ambar-cream/95 text-ambar-gray',
+                  ].join(' ')}
                   aria-hidden
                 >
                   {disp === 'vendido' ? 'Vendido' : 'Reservado'}
@@ -132,7 +318,7 @@ function PlantaMapInteractive({
 }
 
 export default function Plantas() {
-  const [pavAtivo, setPavAtivo] = useState('2')
+  const [pavAtivo, setPavAtivo] = useState('terreo')
   const config = getPavimentoConfig(pavAtivo)
 
   const [selected, setSelected] = useState<UnidadePlanta | null>(
@@ -353,46 +539,67 @@ export default function Plantas() {
     >
       <div className="container-ambar">
         {/* Referência: título à esquerda, abas centradas na largura total */}
-        <header className="mb-8 lg:mb-10 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-y-5 lg:gap-y-0">
-          <h2 className="heading-section text-ambar-brown lg:col-start-1 lg:row-start-1 justify-self-start">
-            PLANTAS
-          </h2>
-          <nav
-            className="flex flex-wrap justify-center gap-x-0.5 gap-y-1 lg:col-start-2 lg:row-start-1 lg:justify-self-center"
-            aria-label="Pavimentos"
+        <header className="mb-8 lg:mb-10 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-y-5 lg:items-end lg:gap-y-0">
+          <AmbarRevealItem preset="skew-up" once={false} className="lg:col-start-1 lg:row-start-1 justify-self-start">
+            <h2 className="heading-section text-ambar-brown">PLANTAS</h2>
+          </AmbarRevealItem>
+          <AmbarRevealItem
+            preset="zoom-pop"
+            delayMs={110}
+            once={false}
+            className="flex w-full justify-center lg:col-start-2 lg:row-start-1 lg:justify-self-center"
           >
-            {PAVIMENTO_TABS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setPavAtivo(p.id)}
-                className={[
-                  'px-5 py-[10px] font-ui text-[16px] text-ambar-gray transition-colors border-b',
-                  pavAtivo === p.id
-                    ? 'border-ambar-gray font-black'
-                    : 'border-transparent font-medium hover:text-ambar-navy hover:border-ambar-gray/25',
-                ].join(' ')}
-              >
-                {p.label}
-              </button>
-            ))}
-          </nav>
+            <nav
+              className="flex flex-wrap items-center justify-center gap-x-0.5 gap-y-1"
+              aria-label="Pavimentos"
+            >
+              {PAVIMENTO_TABS.map((p, idx) => (
+                <AmbarRevealItem
+                  key={p.id}
+                  preset="tilt-in"
+                  staggerIndex={idx}
+                  staggerMs={55}
+                  once={false}
+                  threshold={0.05}
+                  className="inline-flex"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPavAtivo(p.id)}
+                    className={[
+                      'px-5 py-[10px] font-ui text-[16px] text-ambar-gray transition-colors border-b',
+                      pavAtivo === p.id
+                        ? 'border-ambar-gray font-black'
+                        : 'border-transparent font-medium hover:text-ambar-navy hover:border-ambar-gray/25',
+                    ].join(' ')}
+                  >
+                    {p.label}
+                  </button>
+                </AmbarRevealItem>
+              ))}
+            </nav>
+          </AmbarRevealItem>
         </header>
 
         {interactive && panelUnit ? (
           <>
-            {/* Referência: duas imagens lado a lado, alinhadas ao centro vertical */}
+            {/* Desktop: planta completa | planta da unidade | informações */}
             <div
               className={[
                 'grid w-full min-w-0',
-                'grid-cols-1 gap-y-6',
-                'lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,min(42vw,36rem))]',
-                'lg:gap-x-8 xl:gap-x-14',
-                'lg:items-start',
+                'grid-cols-1 gap-6',
+                'lg:grid-cols-[minmax(0,1fr)_minmax(11rem,min(280px,26vw))_minmax(11rem,auto)]',
+                'lg:gap-x-3 xl:gap-x-5',
+                'lg:items-center',
               ].join(' ')}
             >
-              <div className="flex min-w-0 w-full max-w-3xl mx-auto lg:mx-0 lg:max-w-none flex-col items-stretch">
-                <p className="font-ui font-semibold text-[16px] text-ambar-gray text-center tracking-tight pb-2.5">
+              <AmbarRevealItem
+                preset="glide-right"
+                delayMs={70}
+                once={false}
+                className="flex min-h-0 min-w-0 w-full flex-col items-stretch justify-center"
+              >
+                <p className="font-ui font-semibold text-[16px] text-ambar-gray text-center tracking-tight pb-2.5 lg:pb-1.5">
                   Face Norte
                 </p>
                 <div className="h-px w-full shrink-0 bg-ambar-gray/40" aria-hidden />
@@ -400,6 +607,7 @@ export default function Plantas() {
                   interactive={interactive}
                   destaqueRendered={destaqueRendered}
                   destaqueLayerOpacity={destaqueLayerOpacity}
+                  dimMapBaseForDestaque={highlightOnMap != null}
                   onMapPointerEnter={desbloquearSeVoltouAoMapa}
                   onMapPointerLeave={handleMapPointerLeave}
                   onUnitPointerEnter={handleUnitPointerEnter}
@@ -407,68 +615,84 @@ export default function Plantas() {
                   onUnitFocus={handleUnitFocus}
                   handleUnitFocusBlur={handleUnitFocusBlur}
                 />
-                <div className="h-px w-full shrink-0 bg-ambar-gray/40 mt-2" aria-hidden />
-                <p className="font-ui font-semibold text-[16px] text-ambar-gray text-center tracking-tight pt-2.5">
+                <div className="h-px w-full shrink-0 bg-ambar-gray/40 mt-2 lg:mt-1.5" aria-hidden />
+                <p className="font-ui font-semibold text-[16px] text-ambar-gray text-center tracking-tight pt-2.5 lg:pt-1.5">
                   Frente Rua
                 </p>
-              </div>
+              </AmbarRevealItem>
 
-              <div className="flex w-full min-h-0 min-w-0 justify-center lg:justify-center">
-                <div className="relative aspect-square w-full max-w-lg shrink-0 lg:max-w-[min(100%,min(70vh,680px))]">
-                  <img
-                    src={panelUnit.plantaSrc}
-                    alt={`Planta da unidade ${panelUnit.numero}`}
-                    className="absolute inset-0 h-full w-full object-contain object-center bg-transparent"
-                  />
-                </div>
-              </div>
-            </div>
+              <AmbarRevealItem preset="blur-rise" delayMs={120} once={false}>
+                <PlantaUnidadeComLupa
+                  key={panelUnit.numero}
+                  src={panelUnit.plantaSrc}
+                  alt={
+                    disponibilidadeDe(panelUnit) === 'vendido'
+                      ? `Planta da unidade ${panelUnit.numero} (vendida)`
+                      : `Planta da unidade ${panelUnit.numero}`
+                  }
+                  vendido={disponibilidadeDe(panelUnit) === 'vendido'}
+                />
+              </AmbarRevealItem>
 
-            {/* Referência: dados + botão numa linha, grupo centrado na página */}
-            <aside className="mt-5 lg:mt-7 w-full flex flex-col items-center text-ambar-gray">
-              <div className="flex flex-wrap justify-center items-end gap-x-8 sm:gap-x-12 md:gap-x-16 lg:gap-x-20 gap-y-5">
-                <dl className="m-0 flex flex-wrap justify-center items-end gap-x-8 sm:gap-x-12 md:gap-x-16 lg:gap-x-20 gap-y-5">
-                  <div className="flex flex-col gap-[7px] items-center min-w-[5rem] max-w-[min(100%,14rem)]">
-                    <dt className="font-ui font-bold text-[12px] uppercase">UNIDADE</dt>
-                    <dd className="m-0 flex flex-col items-center gap-1.5">
-                      <span className="font-ui font-medium text-[11px] sm:text-[12px] tabular-nums text-center leading-snug break-words">
+              <AmbarRevealItem
+                preset="glide-left"
+                delayMs={90}
+                once={false}
+                className="flex w-full shrink-0 flex-col items-center justify-center gap-4 text-ambar-gray lg:min-w-0 lg:max-w-[min(17rem,30vw)] xl:max-w-[18rem]"
+              >
+                <dl className="m-0 flex w-full max-w-[14rem] flex-col items-center gap-0 text-center font-ui lg:max-w-none">
+                  <div className="flex w-full flex-col items-center gap-1 pb-5">
+                    <dt className="font-bold text-[11px] uppercase tracking-wide leading-tight text-ambar-gray">
+                      Unidade
+                    </dt>
+                    <dd className="m-0 flex flex-col items-center gap-2">
+                      <span className="font-medium text-[14px] tabular-nums leading-snug text-ambar-gray">
                         {panelUnit.numero}
                       </span>
-                      {disponibilidadeDe(panelUnit) === 'vendido' ? (
-                        <span className="inline-block rounded border border-ambar-gray/55 bg-ambar-cream/80 px-2 py-0.5 font-ui text-[9px] font-bold uppercase tracking-wide text-ambar-gray">
-                          Vendido
-                        </span>
-                      ) : null}
-                      {disponibilidadeDe(panelUnit) === 'reservado' ? (
-                        <span className="inline-block rounded border border-ambar-gray/55 bg-ambar-cream/80 px-2 py-0.5 font-ui text-[9px] font-bold uppercase tracking-wide text-ambar-gray">
-                          Reservado
+                      {(disponibilidadeDe(panelUnit) === 'vendido' ||
+                        disponibilidadeDe(panelUnit) === 'reservado') ? (
+                        <span className="flex flex-wrap justify-center gap-1">
+                          {disponibilidadeDe(panelUnit) === 'vendido' ? (
+                            <span className="inline-block rounded border border-red-800/40 bg-red-700/12 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-red-900">
+                              Vendido
+                            </span>
+                          ) : null}
+                          {disponibilidadeDe(panelUnit) === 'reservado' ? (
+                            <span className="inline-block rounded border border-ambar-gray/55 bg-ambar-cream/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-ambar-gray">
+                              Reservado
+                            </span>
+                          ) : null}
                         </span>
                       ) : null}
                     </dd>
                   </div>
-                  <div className="flex flex-col gap-[7px] items-center min-w-[5rem]">
-                    <dt className="font-ui font-bold text-[12px] uppercase">TIPOLOGIA</dt>
-                    <dd className="font-ui font-medium text-[12px] text-center max-w-[10rem] m-0">
+                  <div className="flex w-full flex-col items-center gap-1 pb-5">
+                    <dt className="font-bold text-[11px] uppercase tracking-wide leading-tight text-ambar-gray">
+                      Tipologia
+                    </dt>
+                    <dd className="m-0 max-w-[16rem] text-[13px] font-medium leading-snug text-ambar-gray">
                       {panelUnit.tipologia}
                     </dd>
                   </div>
-                  <div className="flex flex-col gap-[7px] items-center min-w-[5rem]">
-                    <dt className="font-ui font-bold text-[10px] uppercase leading-tight text-center">
-                      ÁREA PRIVATIVA
+                  <div className="flex w-full flex-col items-center gap-1">
+                    <dt className="font-bold text-[10px] uppercase tracking-wide leading-tight text-ambar-gray">
+                      Área privativa
                     </dt>
-                    <dd className="font-ui font-medium text-[12px] tabular-nums m-0">{panelUnit.area}</dd>
+                    <dd className="m-0 text-[14px] font-medium tabular-nums leading-snug text-ambar-gray">
+                      {panelUnit.area}
+                    </dd>
                   </div>
                 </dl>
                 {panelUnit.temDecorado && disponibilidadeDe(panelUnit) === 'disponivel' ? (
                   <a
                     href="#decorados"
-                    className="shrink-0 border border-ambar-gray/50 rounded-[6px] px-5 py-[10px] font-ui font-medium text-[16px] text-ambar-gray hover:bg-ambar-gray hover:text-ambar-cream transition-colors"
+                    className="inline-flex shrink-0 border border-ambar-gray/50 rounded-[6px] px-3 py-2 font-ui font-medium text-[12px] text-ambar-gray transition-colors hover:bg-ambar-gray hover:text-ambar-cream xl:px-4 xl:text-[13px]"
                   >
                     Ver Decorado
                   </a>
                 ) : null}
-              </div>
-            </aside>
+              </AmbarRevealItem>
+            </div>
           </>
         ) : (
           <div

@@ -27,39 +27,51 @@ export default function RplkStats() {
   return (
     <section
       ref={ref}
-      className="relative bg-rplk-midnight py-24 md:py-32 border-y border-white/[0.12]"
+      className="relative bg-rplk-editorial pt-[70px] pb-[110px] md:pb-[120px]"
       aria-labelledby="rplk-stats-heading"
     >
-      <div className="mx-auto max-w-[1600px] px-5 md:px-10 lg:px-14">
-        <h2 id="rplk-stats-heading" className="sr-only">
-          Provas de performance
+      <div className="rplk-editorial-container">
+        {/* Section title */}
+        <h2
+          id="rplk-stats-heading"
+          className="font-rplk-serif font-normal italic text-[clamp(2.25rem,5vw,4.375rem)] leading-[1.03] text-rplk-ink tracking-normal mb-[60px] md:mb-[80px]"
+        >
+          Números que falam por si.
         </h2>
-        <div className="grid gap-16 md:grid-cols-3 md:gap-8 text-center">
-          <div className="space-y-3">
-            <p className="font-rplk-serif text-[clamp(3.5rem,10vw,7rem)] leading-none text-rplk-gold tracking-tight">
+
+        {/* Stats grid — 3 cols with horizontal separators */}
+        <div className="grid md:grid-cols-3 divide-y divide-rplk-ink/15 md:divide-y-0 border-t border-rplk-ink/15">
+          <div className="flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10 md:border-r border-rplk-ink/15">
+            <p className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal"
+              style={{ fontSize: 'clamp(5rem,18vw,8.125rem)' }}>
               {nProj}
             </p>
-            <p className="text-[11px] md:text-xs uppercase tracking-[0.35em] text-rplk-muted font-rplk-sans max-w-[14rem] mx-auto">
+            <p className="mx-auto max-w-[14rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
               Projetos vendidos antes da entrega
             </p>
           </div>
-          <div className="space-y-3 md:border-x border-white/[0.12] md:px-10">
-            <p className="font-rplk-serif text-[clamp(3.5rem,10vw,7rem)] leading-none text-rplk-gold tracking-tight">
+          <div className="flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10 md:border-r border-rplk-ink/15">
+            <p className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal"
+              style={{ fontSize: 'clamp(5rem,18vw,8.125rem)' }}>
               +{nPct}%
             </p>
-            <p className="text-[11px] md:text-xs uppercase tracking-[0.35em] text-rplk-muted font-rplk-sans max-w-[14rem] mx-auto">
+            <p className="mx-auto max-w-[14rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
               Média de valorização em carteira selecionada
             </p>
           </div>
-          <div className="space-y-3">
-            <p className="font-rplk-serif text-[clamp(3.5rem,10vw,7rem)] leading-none text-rplk-gold tracking-tight">
+          <div className="flex flex-col justify-center gap-5 text-center min-h-[240px] py-[55px] px-6 md:px-10">
+            <p className="font-rplk-serif font-light italic leading-[0.92] text-rplk-ink tracking-normal"
+              style={{ fontSize: 'clamp(5rem,18vw,8.125rem)' }}>
               {nFocus}%
             </p>
-            <p className="text-[11px] md:text-xs uppercase tracking-[0.35em] text-rplk-muted font-rplk-sans max-w-[14rem] mx-auto">
+            <p className="mx-auto max-w-[14rem] font-rplk-sans text-[14px] font-normal uppercase tracking-rplk-nav text-rplk-ink/55 leading-normal">
               Foco residencial
             </p>
           </div>
         </div>
+
+        {/* Bottom separator */}
+        <div className="border-b border-rplk-ink/15 mt-0" />
       </div>
     </section>
   )
