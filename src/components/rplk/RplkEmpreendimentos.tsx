@@ -58,11 +58,11 @@ export default function RplkEmpreendimentos({ standalone = false }: { standalone
                 <img
                   src={e.image}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover opacity-100 transition-all duration-[900ms] ease-out group-hover:scale-110 group-hover:opacity-40"
+                  className="absolute inset-0 h-full w-full object-cover opacity-100 group-hover:opacity-40"
                 />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 to-transparent" />
                 <div
-                  className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 group-focus-within:opacity-100"
+                  className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
                   aria-hidden
                 >
                   {isAmbarEmp(e.slug) ? (
@@ -200,12 +200,12 @@ export default function RplkEmpreendimentos({ standalone = false }: { standalone
                 <img
                   src={e.image}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-out group-hover:scale-110 group-hover:opacity-40"
+                  className="absolute inset-0 h-full w-full object-cover group-hover:opacity-40"
                 />
 
                 {/* Hover overlay: title/wordmark */}
                 <div
-                  className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                  className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center opacity-0 group-hover:opacity-100"
                   aria-hidden
                 >
                   {isAmbarEmp(e.slug) ? (

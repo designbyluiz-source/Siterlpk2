@@ -46,8 +46,7 @@ export default function RplkPilares() {
         {/* BoxLinks list */}
         <ul className="mt-[60px] md:mt-[70px]" role="list">
           {pilares.map((p) => {
-            const itemClass =
-              'group flex items-center justify-between py-[30px] transition-transform duration-300 ease-out hover:translate-x-3 cursor-pointer'
+            const itemClass = 'group flex items-center justify-between py-[30px] cursor-pointer'
             const leftContent = (
               <div className="flex items-baseline gap-6 md:gap-10">
                 <span className="font-rplk-serif font-normal italic text-[clamp(0.875rem,1.4vw,1.125rem)] text-rplk-ink/40 tracking-normal leading-none shrink-0">

@@ -16,14 +16,14 @@ export default function RplkHero() {
 
   return (
     <section
-      className="group relative isolate overflow-hidden bg-rplk-midnight h-[100svh]"
+      className="relative isolate overflow-hidden bg-rplk-midnight h-[100svh]"
       aria-label="Abertura"
     >
       {/* Background slides */}
       {heroAmbianceSlides.map((s, i) => (
         <div
           key={s.image}
-          className={`absolute inset-0 transition-opacity duration-[1200ms] ease-out ${
+          className={`absolute inset-0 ${
             i === index ? 'opacity-100 z-0' : 'opacity-0 z-0 pointer-events-none'
           }`}
           aria-hidden={i !== index}
@@ -31,10 +31,7 @@ export default function RplkHero() {
           <img
             src={s.image}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-[18s] motion-safe:ease-out"
-            style={{
-              transform: i === index ? 'scale(1.04) translateZ(0)' : 'scale(1.1) translateZ(0)',
-            }}
+            className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
         </div>
@@ -43,7 +40,7 @@ export default function RplkHero() {
       {/* Previous arrow */}
       <button
         type="button"
-        className="pointer-events-auto absolute left-[clamp(1rem,4.8vw,70px)] top-1/2 z-20 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center border border-solid border-white/85 bg-transparent text-[22px] font-light leading-none text-white opacity-0 shadow-none transition-opacity duration-[400ms] ease-out hover:border-rplk-gold hover:text-rplk-gold md:flex motion-safe:group-hover:opacity-100"
+        className="pointer-events-auto absolute left-[clamp(1rem,4.8vw,70px)] top-1/2 z-20 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center border border-solid border-white/85 bg-transparent text-[22px] font-light leading-none text-white shadow-none hover:border-rplk-gold hover:text-rplk-gold md:flex"
         aria-label="Imagem de fundo anterior"
         onClick={() => setIndex((i) => (i - 1 + heroAmbianceSlides.length) % heroAmbianceSlides.length)}
       >
@@ -53,7 +50,7 @@ export default function RplkHero() {
       {/* Next arrow */}
       <button
         type="button"
-        className="pointer-events-auto absolute right-[clamp(1rem,4.8vw,70px)] top-1/2 z-20 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center border border-solid border-white/85 bg-transparent text-[22px] font-light leading-none text-white opacity-0 shadow-none transition-opacity duration-[400ms] ease-out hover:border-rplk-gold hover:text-rplk-gold md:flex motion-safe:group-hover:opacity-100"
+        className="pointer-events-auto absolute right-[clamp(1rem,4.8vw,70px)] top-1/2 z-20 hidden h-[30px] w-[30px] -translate-y-1/2 items-center justify-center border border-solid border-white/85 bg-transparent text-[22px] font-light leading-none text-white shadow-none hover:border-rplk-gold hover:text-rplk-gold md:flex"
         aria-label="Próxima imagem de fundo"
         onClick={() => setIndex((i) => (i + 1) % heroAmbianceSlides.length)}
       >
@@ -124,7 +121,7 @@ export default function RplkHero() {
         </div>
         <Link
           to="/#sobre"
-          className="flex text-white/75 transition-colors hover:text-rplk-gold motion-safe:animate-[fadeIn_1s_ease-out]"
+          className="flex text-white/75 hover:text-rplk-gold"
           aria-label="Descer para a próxima secção"
         >
           <svg width="60" height="60" viewBox="0 0 60 60" fill="none" aria-hidden className="opacity-90">

@@ -61,7 +61,7 @@ export default function RplkManifesto() {
             <img
               src="/rplk/sobre-equipe.png"
               alt="Equipe RPLK"
-              className="block w-full h-auto motion-safe:animate-rplk-kenburn"
+              className="block w-full h-auto"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-transparent to-black/20 pointer-events-none" />
           </div>

@@ -7,7 +7,7 @@ export default function RplkDepoimentos() {
   const scrollBy = (dir: -1 | 1) => {
     const el = scroller.current
     if (!el) return
-    el.scrollBy({ left: dir * Math.min(420, el.clientWidth * 0.85), behavior: 'smooth' })
+    el.scrollBy({ left: dir * Math.min(420, el.clientWidth * 0.85), behavior: 'auto' })
   }
 
   return (
