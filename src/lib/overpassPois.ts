@@ -13,18 +13,53 @@ export type OsmPoi = {
 const R_METERS = 950
 
 /**
- * Mesmo domínio primeiro (/api/overpass) — proxied em dev (Vite) e em vários hosts (ex.: vercel.json).
- * Depois mirrors públicos se o primeiro falhar ou for bloqueado.
+ * HTTPS direto primeiro (Chrome e a maioria dos browsers; User-Agent correcto).
+ * `/api/overpass` por último — proxy Vite/Vercel para ambientes que bloqueiam domínios externos (ex. Safari);
+ * se for o primeiro e o proxy pendurar, nunca se chegava aos mirrors.
  */
 export function overpassInterpreterUrls(): string[] {
-  if (typeof window === 'undefined') {
-    return ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']
-  }
-  return [
-    '/api/overpass',
+  const mirrors = [
     'https://overpass-api.de/api/interpreter',
     'https://overpass.kumi.systems/api/interpreter',
   ]
+  if (typeof window === 'undefined') {
+    return [...mirrors]
+  }
+  return [...mirrors, '/api/overpass']
+}
+
+/** Timeout por tentativa + propagação do abort do efeito React. */
+function abortableAttempt(parent: AbortSignal | undefined, ms: number) {
+  const c = new AbortController()
+  let settled = false
+  const t = globalThis.setTimeout(() => {
+    if (!settled) c.abort()
+  }, ms)
+
+  const dispose = () => {
+    if (settled) return
+    settled = true
+    globalThis.clearTimeout(t)
+    if (parent) parent.removeEventListener('abort', onParentAbort)
+  }
+
+  const onParentAbort = () => {
+    if (settled) return
+    c.abort()
+    dispose()
+  }
+
+  if (parent) {
+    if (parent.aborted) {
+      globalThis.clearTimeout(t)
+      settled = true
+      c.abort()
+    } else {
+      parent.addEventListener('abort', onParentAbort, { once: true })
+    }
+  }
+
+  return { signal: c.signal, dispose }
 }
 
 async function postOverpass(
@@ -186,11 +221,12 @@ export type OverpassElement = {
 
 async function fetchOverpassJson(
   ql: string,
-  signal?: AbortSignal,
+  outerSignal?: AbortSignal,
 ): Promise<{ elements?: OverpassElement[] }> {
   const urls = overpassInterpreterUrls()
   let lastErr: unknown
   for (const url of urls) {
+    const { signal, dispose } = abortableAttempt(outerSignal, 18_000)
     try {
       const res = await postOverpass(url, ql, signal)
       if (!res.ok) {
@@ -200,6 +236,8 @@ async function fetchOverpassJson(
       return (await res.json()) as { elements?: OverpassElement[] }
     } catch (e) {
       lastErr = e
+    } finally {
+      dispose()
     }
   }
   throw lastErr instanceof Error ? lastErr : new Error('Overpass indisponível')
